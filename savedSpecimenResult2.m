@@ -1,4 +1,6 @@
 function savedSpecimenResult2(realignedcropedimgs,sppmask,sppedge,imgtypes,template,sppMatriceDir,sppInspectionDir,specimenLabelList,cmscale,finalCentroidList)
+%Save all results, visualizations, and images for inspection
+
 %Determine if there is side information in the file name
 dorsalventrallist={'dorsal';'ventral';'unknown'};
 
@@ -55,13 +57,10 @@ for sppin=1:sppamounts
     disp(['Data matrices for specimen No. ',num2str(sppin),' out of ',num2str(sppamounts),' are saved.']);
     
     %Create an integrative image for all band including mask
-    %nogreenchannel=zeros(size(sppimgs{1},1),size(sppimgs{1},2));
-    %imgFinRGB=sppimgs1{end-1};
     
     [spimgl,spimgw]=size(sppimgs1{1});
     sppimgsoverview0=[sppimgs1{1:4}];
     sppimgsoverview0RGB=[cat(3,sppimgsoverview0,sppimgsoverview0,sppimgsoverview0)];
-    %sppimgsoverview1RGB=[imgFinRGB,sppimgs1{6:end-3}];
     sppimgsoverview1RGB=[sppimgs1{6:end-3},imgPolarDiff];
     %create scale bar
     scaleline=zeros(50,size(sppimgsoverview0RGB,2),3);
@@ -81,7 +80,6 @@ for sppin=1:sppamounts
     end
     hold off;
     export_fig(figall,sppvisoutname, '-jpg', '-r150');
-%     saveas(figall, sppvisoutname);    
     close(figall);
     disp(['Overview for specimen No. ',num2str(sppin),' out of ',num2str(sppamounts),' are saved.']);
     
@@ -98,21 +96,16 @@ for sppin=1:sppamounts
             %Save images with outline
             demooutname=strjoin([specimenLabelList(sppin),side,imgtypes{imgtp},'demo.jpg'],'_');
             demoout=fullfile('Drawer_result',template,[template,'_visualization'],[template,'_',imgtypes{imgtp}],demooutname);
-            %imscaleline=zeros(50,size(sppimgs1{imgtp},2),size(sppimgs1{imgtp},3));
-            %imscaleline(20:30,round(end-100-cmscale):round(end-100),:)=1;
-            %bandImg=vertcat(sppimgs1{imgtp},imscaleline);
             fig=figure('visible', 'off');
             imshow(bandImg);
             hold on;
             plot(specimenB{1}(:,2), specimenB{1}(:,1), 'r', 'LineWidth', 0.5);
             hold off;
             export_fig(fig, demoout, '-jpg', '-r100');
-%             saveas(fig, demoout);
             %Save a copy for inspection purpose
             if imgtp==2
                 inspout=fullfile('Drawer_result',sppInspectionDir,demooutname);
                 export_fig(fig, inspout, '-jpg', '-r100');
-%                 saveas(fig, inspout);
             end
             %Special display for mask
             if imgtp<11

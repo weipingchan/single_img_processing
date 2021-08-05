@@ -1,6 +1,8 @@
 function [cmscale,GscaleUR,GscaleLL] = Cm2Pixel(img,scaleBox)
 %Extract the scale bar based on the scence image and the box indicating the
 %location of the scale bar
+%the variable cmscale indicates the number of pixels per centimeter
+
 xLeft = min(scaleBox(:, 1));
 xRight = max(scaleBox(:, 1));
 yTop = min(scaleBox(:, 2));

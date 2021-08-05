@@ -1,4 +1,7 @@
 function cropedimgs=cropimg(wbimg0s,geometry_osize)
+%Crop multi-layer matrix according to the given bounding box
+%Crop out multi-spectral images from the original drawer image according to
+%the detected bounding box information
 [geolen,~]=size(geometry_osize);
 [imgn,~]=size(wbimg0s);
 cropedimgs=cell(geolen,imgn);
@@ -11,7 +14,6 @@ for in=1:geolen
         if bounding(3)-ceil((bounding(4)-bounding(3))/20)<1 leftbond=1;, else leftbond=bounding(3)-ceil((bounding(4)-bounding(3))/20);, end;
         if bounding(4)+ceil((bounding(4)-bounding(3))/20)>size(wbimg0s{im},2) rightbond=size(wbimg0s{im},2);, else rightbond=bounding(4)+ceil((bounding(4)-bounding(3))/20);, end;
       cropedimgs{in,im}= wbimg0s{im}(upbond:lowbond,leftbond:rightbond,:);
-      %disp(['in: ',num2str(in),' and im: ',num2str(im),' is done.']);
     end
 end
 end

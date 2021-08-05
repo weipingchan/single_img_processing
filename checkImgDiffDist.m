@@ -1,4 +1,6 @@
 function imgDiffDist=checkImgDiffDist(movingin,movingRegisteredAffineWithIC)
+%summarize the distance between the corresponding landmarks in two images
+%in order to be provided as an index for alignment
         Idouble = im2double(grayImg(movingin)); 
         avg = mean2(Idouble);        
 

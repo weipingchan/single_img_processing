@@ -1,4 +1,5 @@
 function [bwboardimgs,bwboardimg0s]=historical_imgs_cropping2(wbimg0s,img0s)
+%Crop unwanted bourder outside of the imaging platform if there is any
 chanel940=wbimg0s{2};
 
 [prow,pcol]=size(chanel940);

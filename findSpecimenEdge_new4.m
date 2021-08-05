@@ -1,12 +1,7 @@
 function [sB,sL,panel_ff]= findSpecimenEdge_new4(sppimgs)
 %%%%
-%This version removed the head pard refining but keep the tail refining
-%Find both refing in ' findSpecimenEdge_new'
-%Find no refining version in 'findSpecimenEdge_newSim'
-%%%%
 oriB940=sppimgs{2};
-%%
-%%Low light image treatment
+%%dark image treatment
 AInv740 = imcomplement(sppimgs{1});
 BInv740 = imreducehaze(AInv740, 'ContrastEnhancement', 'none');
 B740 = imcomplement(BInv740);
@@ -22,10 +17,9 @@ actFactor=300;%default value nearly all scripts were developed under this value
 simplematrix=localcontrast(im2uint16(cat(3,B740,B940,B940)));
 
 nColors = 3;
-% repeat the clustering 3 times to avoid local minima
+% repeat the clustering 3 times to avoid local minimum
 pixel_labels =imsegkmeans(simplematrix,nColors,'NumAttempts',5);
-%pixel_labels =imsegkmeans(lab_he,nColors,'NumAttempts',nColors);
-%figure,imshow(pixel_labels,colormap('lines'));
+%figure,imshow(pixel_labels,colormap('lines')); %This line is preserved for debugging
 [~,backgroundclass1]=max([nnz(pixel_labels==1),nnz(pixel_labels==2),nnz(pixel_labels==3)]);
 cornerSample=[pixel_labels(round(end/10),5),pixel_labels(round(end/10),end-5),pixel_labels(round(end*9/10),5),pixel_labels(round(end*9/10),end-5), ...
     pixel_labels(round(end/10),round(end*1/4)),pixel_labels(round(end/10),round(end*2/4)),pixel_labels(round(end/10),round(end*3/4)),pixel_labels(round(end*9/10),round(end*1/4)), ...
@@ -47,7 +41,6 @@ else
     end
 end
 
-%specimenMask1 = medfilt2(imerode(imfill(imdilate(specimenMask0,strel('disk',2)),'hole'),strel('disk',2)),[10,10]);
 specimenMask1 = imerode(imdilate(specimenMask0,strel('disk',2)),strel('disk',2)); %Modified Feb. 15, 2020
 %%
 adjsizefactor=2;
@@ -70,35 +63,25 @@ specimenMaskCom=immultiply(specimenMask2,specimenMaskoutline);
 specimenMask3=medfilt2(imdilate(bwareaopen(medfilt2(imerode(imbinarize(specimenMaskCom*2),strel('disk',2)),[5,5]),round(prow*pcol/4/adjsizefactor^2)),strel('disk',2)),[10,10]);
 
 %%
- %Modified Feb. 15, 2020
 specimenMask30=bwareaopen(imbinarize(specimenMask2)+specimenMask3,round(prow*pcol/4/adjsizefactor^2));
 specimenMask31=imfill(bwareaopen(specimenMask1+imbinarize(specimenMask2)+specimenMask3,round(prow*pcol/4/adjsizefactor^2)),'hole');
-%figure,imshowpair(specimenMask30,specimenMask31);
 
 specimenMaskDiff=imabsdiff(specimenMask30,specimenMask31);
 specimenMaskDiff2=bwareaopen(imdilate(imerode(specimenMaskDiff,strel('disk',2)),strel('disk',2)),50);
 if round(mean(oriB940(specimenMaskDiff2)),1)>=0.2
-%if mean(oriB940(specimenMaskDiff2))>0.2 && std(B940(specimenMaskDiff2))>0.08
     specimenMask4=specimenMask31;
 else
     specimenMask4=specimenMask30;
 end
 %%
-
-%figure,imshow(specimenMask4);
-%%
-%panel0=imadjust(sppimgs{2});
-%panel0=imadjust(rgb2gray(simplematrix));
-%panel0=adapthisteq(im2uint16(B940));
 panel0=localcontrast(rgb2gray(simplematrix));
 
-%[prow, pcol]=size(panel0);
-%Create a set of convolutional images
+%Create a set of images which were handled by different approaches
 panel_sharp0=imsharpen(localcontrast(panel0),'Radius',1,'Amount',3);
 panel_ed0=immultiply(imfill(imdilate(im2double(panel_sharp0),strel('disk',2)),'hole'),imfill(imdilate(im2double(panel0),strel('disk',3)),'hole'));
 panel=imadjust(immultiply(imfill(panel_ed0),imdilate(imfill(specimenMask1,'hole')+0.2,strel('disk',5))))+imfill(specimenMask1,'hole')*0.3; %Added 20181128
 
-%Use index to jduge if the mask is good or not
+%Use the index to jduge if the mask is good or not
 spMaskInd=nnz(imclearborder(specimenMask4))/(prow*pcol);
 [spMaskB,spMaskL] = bwboundaries(specimenMask4,'noholes');
 if spMaskInd>0.2 && length(spMaskB)<20
@@ -107,24 +90,13 @@ else
     specimenMask = imerode(imfill(medfilt2(imbinarize(panel_ed0),[10,10]),'hole'),strel('disk',1));
 end
 
-%panel=imadjust(imfill(panel_ed0)+panel_dark);
-%Create a set of convolutional images
-%panel_sharp=imsharpen(panel,'Radius',1,'Amount',3);
-%panel_ed=immultiply(imsharpen(imfill(imdilate(panel_sharp,strel('disk',2)),'hole')),panel_sharp);
-%panel_edm=imclearborder(imfill(panel_ed),4);
-%panel_ed2=3*(imdilate(panel_edm,strel('disk',1))-imerode(panel_edm,strel('disk',1)))+panel_edm;  
-%panel_ed3=imfill(imsharpen(panel_ed2));
-
-%panel_ed5=bwareaopen(imbinarize(medfilt2(panel_ed3,[3,2]),0.1),400);
-%panel_ed6=imdilate(bwareaopen(imerode(panel_ed5,strel('disk',4)),100),strel('disk',4));
-
 background0 = imclose(imfill(imopen(panel,strel('disk',5))),strel('disk',5));
 background1 = imdilate(imerode(background0,strel('disk',40)),strel('disk',10));
 
 
-%Use two ends to find the most appropriate binerized factor
+%Begin from two ends to find the most appropriate binerized factor
 for binerizedFactor1=0.5:0.02:0.96
-    %disp(binerizedFactor);
+    %disp(binerizedFactor); %for debugging
     mask01=bwareaopen(imbinarize(background1,1-binerizedFactor1),200);
     [~,~,mN1]=bwboundaries(bwareaopen(mask01,round(prow*pcol/4/adjsizefactor^2)),'noholes');
     if mN1==1
@@ -132,7 +104,7 @@ for binerizedFactor1=0.5:0.02:0.96
     end
 end
 for binerizedFactor2=0.96:-0.02:0.5
-    %disp(binerizedFactor);
+    %disp(binerizedFactor); %for debugging
     mask02=bwareaopen(imbinarize(background1,1-binerizedFactor2),200);
     [~,~,mN2]=bwboundaries(bwareaopen(mask02,round(prow*pcol/4/adjsizefactor^2)),'noholes');
     if mN2==1
@@ -152,22 +124,13 @@ if mN~=1
         mL(ceil(prow/5):end-ceil(prow/5),ceil(pcol/5):end-ceil(pcol/5)) = 1;
     end
 end
-
 mask= imdilate(mL,strel('disk',10));
-
-
 panel_seg2 = activecontour(background0,mask,ceil(prow*pcol/560000*actFactor));
-%stats_mL = regionprops(bwconvhull(mask), 'Area', 'BoundingBox','Centroid');
-stats_mL = regionprops(bwconvhull(panel_seg2), 'Area', 'BoundingBox','Centroid'); %Modifide Feb.15, 2020
-%sppcen=stats_mL.Centroid;
+stats_mL = regionprops(bwconvhull(panel_seg2), 'Area', 'BoundingBox','Centroid');
 sppcen=stats_mL.Centroid;
 sppbox=stats_mL.BoundingBox;
 
 %create a mask for dealing the antenne and body issue
-%mask2 = zeros(size(panel)); %for head detectation
-%mask2(1:ceil(sppcen(2))-10,ceil(sppcen(1))-ceil(sppbox(3)/4):ceil(sppcen(1))+ceil(sppbox(3)/4)) = 1;
-%mask3 = zeros(size(panel)); %for head refine
-%mask3(1:ceil(sppcen(2))-20,ceil(sppcen(1))-ceil(sppbox(3)/5):ceil(sppcen(1))+ceil(sppbox(3)/5)) = 1;
 mk2x=[1, 1,ceil(sppcen(2)-sppbox(4)/2),ceil(sppcen(2))+10,ceil(sppcen(2))+10,ceil(sppcen(2)-sppbox(4)/2)];
 mk2y=[ceil(sppcen(1)-sppbox(3)*2/5),ceil(sppcen(1)+sppbox(3)*2/5),ceil(sppcen(1)+sppbox(3)*2/5),ceil(sppcen(1)+sppbox(3)/10),ceil(sppcen(1))-ceil(sppbox(3)/10),ceil(sppcen(1)-sppbox(3)*2/5)];
 mask2 = poly2mask(mk2y,mk2x,prow,pcol); %for head detectation
@@ -178,7 +141,6 @@ mask4 = zeros(size(panel));  %for body detectation
 mask4(ceil(sppcen(2))+10:end,ceil(sppcen(1))-ceil(sppbox(3)/4):ceil(sppcen(1))+ceil(sppbox(3)/4)) = 1;
 mask5 = zeros(size(panel));  %for body refine
 mask5(ceil(sppcen(2))+20:end,ceil(sppcen(1))-ceil(sppbox(3)/6):ceil(sppcen(1))+ceil(sppbox(3)/6)) = 1;
-%oppmask3n5=imcomplement(mask3+mask5);
 
 head_judge=bwareaopen(immultiply(specimenMask,mask3),100);
 tail_judge= bwareaopen(immultiply(imfill(specimenMask,'hole')+panel_seg2,mask5),300);
@@ -187,18 +149,6 @@ tail_judge= bwareaopen(immultiply(imfill(specimenMask,'hole')+panel_seg2,mask5),
 
 [~, mask_head]= headPartMask(panel,panel_seg2,imfill(specimenMask,'hole'),mask2,mask3);
 panel_head_ready2=bwareaopen(immultiply(specimenMask,mask_head),100);
-% If there is any detached part in the head region
-% if length(headB)==1
-%     stats_headB = regionprops(headL, 'EulerNumber');
-%     if stats_headB.EulerNumber==1
-%         panel_head_ready2=zeros(size(panel));
-%         mask_head=zeros(size(panel));
-%     else
-%         [panel_head_ready2, mask_head]= headPartMask(panel,panel_seg2,imfill(specimenMask,'hole'),mask2,mask3);
-%     end
-% else
-%     [panel_head_ready2, mask_head]= headPartMask(panel,panel_seg2,imfill(specimenMask,'hole'),mask2,mask3);
-% end
 
 % If there is any detached part in the tail region
 if length(tailB)==1
@@ -216,28 +166,20 @@ end
 %create a negetive mask of body and head
 oppmaskHeadTail=imcomplement(mask_head+mask_tail);
 
-
 %create the final version of wings
 panel_ed7=bwareaopen(imfill(imerode(imdilate(imbinarize(panel_seg2+imfill(specimenMask,'hole'),0.4),strel('disk',5)),strel('disk',5)),'hole'),round(prow*pcol/9));
-%panel_ed6=bwareaopen(imfill(imbinarize(panel_seg2+panel_ed5,0.4),'hole'),300);
-%panel_ed8=immultiply(panel_ed7,oppmask3n5)+head_judge+tail_judge;
 %compose and refine wings and body but not head
-%panel_WingBody=bwareaopen(imfill(imerode(imdilate(panel_body_ready2+immultiply(panel_ed8,oppmaskHeadTail),strel('disk',2)),strel('disk',2)),'hole'),round(prow*pcol/4/adjsizefactor^2));
 panel_WingBody=bwareaopen(imfill(imerode(imdilate(panel_body_ready2+immultiply(panel_ed7,oppmaskHeadTail),strel('disk',2)),strel('disk',2)),'hole'),round(prow*pcol/4/adjsizefactor^2));
 
 %%
-%Newly added Feb 14, 2020
 %Head module
 maskDiff_head=imabsdiff(specimenMask,panel_ed7);
-%maskDiffSelect=bwareaopen(maskDiff,50);
 maskDiffSelect_head=immultiply(bwareaopen(imdilate(imerode(maskDiff_head,strel('disk',2)),strel('disk',2)),30),mask3);
 [diffL_h,diffN_h] = bwlabel(maskDiffSelect_head);
 
-%mask02=imdilate(mask01,strel('disk',5));
-
 mask02= imerode(imfill(imdilate(imerode(specimenMask,strel('disk',5)),strel('disk',8)),'hole'),strel('disk',15));
-%figure,imshowpair(mask02, specimenMask);
-%figure,imshowpair(mask02, maskDiff_head);
+%figure,imshowpair(mask02, specimenMask);  %This line is preserved for debugging
+%figure,imshowpair(mask02, maskDiff_head);  %This line is preserved for debugging
 
 oriThreshold=0.2;
 deBackMask_head=zeros(prow,pcol);
@@ -252,25 +194,16 @@ for dn=1:diffN_h
 end
 
 %Tail module. Try to remove legs
-% majorObj_tail=imdilate(imerode(specimenMask,strel('disk',10)),strel('disk',8)); %Used for reduced area
-% margin_tail=imabsdiff(majorObj_tail,imerode(majorObj_tail,strel('disk',3)));
-% margincut_tail=logical(immultiply(margin_tail,mask5)); %margin left between abdomen and hind wings
-% specimenMask0_tail=(majorObj_tail-margincut_tail)>0;
 maskDiff_tail=imabsdiff((panel_WingBody+mask_head)>0,bwareaopen(imdilate(imerode(specimenMask,strel('disk',10)),strel('disk',10)),20));
-%maskDiff_tail=imdilate(imfill(imerode(imabsdiff(specimenMask,bwareaopen(imdilate(imerode(specimenMask0_tail,strel('disk',10)),strel('disk',10)),20)),strel('disk',2)),'hole'),strel('disk',2));
 maskDiffSelect_tail=bwpropfilt(bwpropfilt(logical(immultiply(bwareaopen(imdilate(imerode(maskDiff_tail,strel('disk',2)),strel('disk',2)),30),mask5)),'Eccentricity',[0.9 1]),"MinorAxisLength",[0 10]); %Eccentricity=1 is a line
 [diffL_t,diffN_t] = bwlabel(maskDiffSelect_tail);
-%figure,imshowpair(maskDiff_tail, specimenMask);
-%figure,imshowpair(maskDiffSelect_tail, specimenMask);
+%figure,imshowpair(maskDiff_tail, specimenMask);  %This line is preserved for debugging
+%figure,imshowpair(maskDiffSelect_tail, specimenMask);  %This line is preserved for debugging
 
 deBackMask_tail=zeros(prow,pcol);
 addBackMask_tail=zeros(prow,pcol);
 for dn=1:diffN_t
     diffMask=diffL_t==dn;
-%     %if mean(maskDiffSelect_tail(diffMask))>0.5 && mean(mask02(diffMask))<0.05
-%     overlap_tail=nnz(immultiply(imdilate(diffMask,strel('disk',2)),majorObj_tail));
-%     edge_tail=nnz(imabsdiff(imdilate(diffMask,strel('disk',2)),diffMask));
-%     (edge_tail-overlap_tail)/(edge_tail+overlap_tail)
     if mean(maskDiffSelect_tail(diffMask))>0.5
         deBackMask_tail(imdilate(diffMask,strel('disk',3)))=1;
     else
@@ -283,36 +216,16 @@ maskDiffSelect_tail2=immultiply(bwareaopen(imdilate(imerode(maskDiff_tail,strel(
 [dL_t,dN_t] = bwlabel(maskDiffSelect_tail2);
 for dn=1:dN_t
     diffMask=dL_t==dn;
-%     %if mean(maskDiffSelect_tail(diffMask))>0.5 && mean(mask02(diffMask))<0.05
-%     overlap_tail=nnz(immultiply(imdilate(diffMask,strel('disk',2)),majorObj_tail));
-%     edge_tail=nnz(imabsdiff(imdilate(diffMask,strel('disk',2)),diffMask));
-%     (edge_tail-overlap_tail)/(edge_tail+overlap_tail)
     diff_stat=regionprops(diffMask,'Centroid','MinorAxisLength');
     Cmask_diff_t=createCirclesMask(diffMask, diff_stat.Centroid, diff_stat.MinorAxisLength/4);
-%    figure,imshowpair(diffMask,Cmask_diff_t);
+%    figure,imshowpair(diffMask,Cmask_diff_t);  %This line is preserved for debugging
     if nnz(diffMask(Cmask_diff_t))/nnz(Cmask_diff_t)<0.8
         deBackMask_tail(imdilate(diffMask,strel('disk',3)))=1;
-%     else
-%         addBackMask_tail2(diffMask)=1;
     end
 end
 
 deBackMask=(deBackMask_head+deBackMask_tail)>0;
 addBackMask=(addBackMask_head+addBackMask_tail)>0;
-% if diffN>=10
-%     oriThreshold=mean(diffMaskList(:,1))-1.5*std(diffMaskList(:,1));
-%     Threshold=mean(diffMaskList(:,2))-1.5*std(diffMaskList(:,2));
-% else
-%     oriThreshold=0.1;
-%     Threshold=0.4;
-% end
-% 
-% deBackdn=find(diffMaskList(:,1)<oriThreshold & diffMaskList(:,2)<Threshold); % The mask region that has really low reflectance, considering as background
-% 
-% deBackMask=zeros(prow,pcol);
-% for addDn=1:length(deBackdn)
-%     deBackMask(diffL==deBackdn(addDn))=1;
-% end
 
 %pin the head region on
 panel_ff0=imfill(bwareaopen(panel_head_ready2+panel_WingBody,round(prow*pcol/4/adjsizefactor^2)),'hole');
@@ -322,9 +235,9 @@ panel_ff1_tail=bwareaopen(imfill(immultiply(panel_ff1,mask5),'hole'),200);
 majorObj=imdilate(imerode(panel_ff1,strel('disk',10)),strel('disk',10)); %Used for reduced area
 margin=imabsdiff(majorObj,imdilate(majorObj,strel('disk',5)));
 margincut=logical(immultiply(margin,(mask3-mask_head)>0)); %margin left between anteanea and fore wings
-%figure,imshowpair(panel_ff1,margin);
-%figure,imshowpair(panel_ff1,margincut);
-%figure,imshowpair((mask3-mask_head)>0,margin);
+%figure,imshowpair(panel_ff1,margin);  %This line is preserved for debugging
+%figure,imshowpair(panel_ff1,margincut);  %This line is preserved for debugging
+%figure,imshowpair((mask3-mask_head)>0,margin);  %This line is preserved for debugging
 
 panel_ff2=(immultiply(panel_ff1,imcomplement(mask5))+panel_ff1_tail-margincut)>0;
 panel_ff3=bwareaopen(panel_ff2,round(prow*pcol/4/adjsizefactor^2));
@@ -332,8 +245,6 @@ panel_ff3=bwareaopen(panel_ff2,round(prow*pcol/4/adjsizefactor^2));
 %detect fore-hing wing gap and improve the accuracy
 try
     maskf=panel_ff3;
-    %maskf2=bwareafilt(imdilate(bwareafilt(imfill(imerode(mask,strel('disk',5)),'hole'),2),strel('disk',2)),1);%Used for reduced area
-
     %Find the symetric axis
     [symCentroid,symAxis,~]=findSymetricAxes(maskf);
     disp('The symatric axis has been found.');
@@ -350,7 +261,6 @@ try
 
      %Calculated the difference between two centroids
      cenDiff=pdist([regioncen;cenregioncen],'euclidean');
-     %cenDiffRatio=cenDiff/min(boundingBox(3:4));
 
      %Pick the most suitable one
      if cenDiff<50
@@ -377,47 +287,7 @@ try
     dim_2=realCen+symOrtho*size(maskf,1)/9;
     dim_2plot=[realCen(1),dim_2(1);realCen(2),dim_2(2)];
 
-%     %figure,imshow(mask)
-%     inspoutname=fullfile(Result_directory,'Shape_analysis',subFolderList{1},[template,'_',vdlist{side},flag,'_primary_key_pts.png']);
-%     figinsp=figure('visible', 'off');
-%     imshowpair(maskf,cenregion);
-%     hold on;
-%     plot(symCentroid(1),symCentroid(2),'y*');
-%     plot(symCentroid(1),symCentroid(2),'bo');
-%     %plot(symSkeletonCentroid(1),symSkeletonCentroid(2),'yo');
-%     plot(regioncen(1),regioncen(2),'b*');
-%     plot(cenregioncen(1), cenregioncen(2),'r+');
-%     line(dim_1plot(1,:),dim_1plot(2,:), 'Color', 'r' ,'LineWidth', 1);
-%     line(dim_2plot(1,:),dim_2plot(2,:), 'Color', 'b' ,'LineStyle','--','LineWidth', 1);
-%     plot(allFrameCorners(:,1),allFrameCorners(:,2),'y+');
-%     %rectangle('Position', boundingBox, 'EdgeColor','w','LineStyle','-.', 'LineWidth', 1);
-%     %plot(realCen(1),realCen(2),'ro','LineWidth', 2);
-%     hold off;
-%     %saveas(figmask, maskoutname);
-%     %print(figinsp,inspoutname,'-dpng','-r150'); %Use print to save high quality images
-%     export_fig(figinsp,inspoutname, '-png','-r150');
-%     close(figinsp);
-%     disp('An image indcating the primary key points of specimen image has been saved.');
-%     %Show the mask in an image
-%     maskoutname=fullfile(Result_directory,'Shape_analysis',subFolderList{2},[template,'_',vdlist{side},flag,'_mask_cen.png']);
-%     figmask=figure('visible', 'off');
-%     imshow(maskf);
-%     hold on;
-%     %plot(segPts(:,1),segPts(:,2),'r+');
-%     %plot(forehindCornerR(:,1),forehindCornerR(:,2),'r*');
-%     %plot(forehindCornerL(:,1),forehindCornerL(:,2),'r*');
-%     plot(realCen(:,1),realCen(:,2),'bo','LineWidth', 1);
-%     line(dim_1plot(1,:),dim_1plot(2,:), 'Color', 'b' ,'LineWidth', 1);
-%     line(dim_2plot(1,:),dim_2plot(2,:), 'Color', 'b' ,'LineStyle','--','LineWidth', 1);
-%     hold off;
-%     %saveas(figmask, maskoutname);
-%     %print(figmask,maskoutname,'-dpng','-r150'); %Use print to save high quality images
-%     export_fig(figmask,maskoutname, '-png','-r150');
-%     close(figmask);
-%     disp('An image indcating the mask and centroid of specimen image has been saved.');
     %%
-    %beltheight=boundingBox(4)*0.25;
-    %beltwidth=boundingBox(3)*0.15;
     %Use erosion mask to prevent the interference of long tail
      if cenDiff>=50
         boundingBoxDV= boundingBoxErosion;
@@ -430,8 +300,8 @@ try
      end
     disp('########## Begin to find the corner between Fore and Hing wings. #########');
     disp('Begin to find the corner between Left fore and hing wings.');
-    nStrongCornersList=[500,1000,2000,3000,4000]; %[500,1000,2000,4000];
-    nSectionList=[60:-5:20]; %number of elements should greater than 4  ([20:5:50];)
+    nStrongCornersList=[500,1000,2000,3000,4000];
+    nSectionList=[60:-5:20]; %number of elements in the list should be greater than 4. Alternative one: [20:5:50]
 
     slopeSwitch='wingEdge';
     [conjPt,forehindCorner,~]=findForeHindCorner(nStrongCornersList,nSectionList,maskf,realCen,symAxis,ulCornerDV,boundingBoxDV,slopeSwitch);
@@ -452,7 +322,7 @@ try
     forehindCornerR=conjPt;
     disp('The corner between Right fore and hing wings has been found.');
     disp('########## Two corners between Fore and Hing wings are found. #########');
-
+% This chunk is preserved for debugging
 %     figure,imshow(maskf);
 %     hold on;
 %     plot(forehindCornerR(:,1),forehindCornerR(:,2),'rx','LineWidth', 2);
@@ -469,16 +339,15 @@ try
     fh_corner_ring=imdilate(fh_corner_masks,strel('disk',10))-imerode(fh_corner_masks,strel('disk',10));
     fh_corner_ring_smoothMask = imerode(imdilate(immultiply(panel_ff4, fh_corner_ring),strel('disk',20)),strel('disk',20));
     panel_ff=(immultiply(panel_ff4,imcomplement(fh_corner_ring))+fh_corner_ring_smoothMask)>0;
-%     figure,imshowpair(panel_ff, panel_ff3);
+%     figure,imshowpair(panel_ff, panel_ff3);  %This line is preserved for debugging
 catch
     panel_ff=panel_ff3;
     disp('No fore-hind wing joint correction');
 end
 
 %%
-%panel_ff=specimenMask4;
-
 [sB,sL] = bwboundaries(panel_ff,'noholes');
+% This chunk is preserved for debugging
 % sBpt=sB{1};
 % figure,imshow(oriB940);hold on;
 % plot(sBpt(:,2),sBpt(:,1),'r');

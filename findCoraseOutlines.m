@@ -1,4 +1,7 @@
 function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,drawerlist,labelfile,shapethreshold,maxarea2rectangleratio,gatheringfactorlist,MinimalObjectSize,Code_directory,drawerInspectionDir)
+%Idnetify the postion of specimens, claculate the numbers of them, and
+%comapre that number with number of barcodes    
+
     %Find the corresponding labels and match with thenumber of specimens
     %Create temporary one if cannot find one
     subtemplate0=strsplit(template,'_');
@@ -9,7 +12,6 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
         gatheringfactor=5; %if no label record, use 5 as the gatheringfactor
         disp(['Use gatheringfactor: ' ,num2str(gatheringfactor)]);
         [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize);
-        %sppamounts=size(geomtry_osize,1);
         specimenLabelList=createTemporaryLabel(subtemplate1,sppamounts);
     else
         disp('Find the corresponding drawer information.');
@@ -18,38 +20,31 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
         specimenLabelList0=specimenLabelList0(~cellfun('isempty',specimenLabelList0));%remove empty cells
         specimenLabelList=specimenLabelList0(2:end);
         labelsppno=length(specimenLabelList);
-        
-        
-        gatheringresult=zeros(length(gatheringfactorlist),2); %Testing zone 20180401
-        
+        gatheringresult=zeros(length(gatheringfactorlist),2);
         for loo=1:length(gatheringfactorlist)
             gatheringfactor=gatheringfactorlist(loo); 
             disp(['Try gatheringfactor: ' ,num2str(gatheringfactor)]);
             [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize);
-            %sppamounts=size(geomtry_osize,1);
             if labelsppno ==sppamounts
                 disp(['Numbers of labels ' ,num2str(labelsppno),' matches number of specimens found.']);
                 break;
             end
-            gatheringresult(loo,1)=gatheringfactor; %Testing zone 20180401
-            gatheringresult(loo,2)=sppamounts; %Testing zone 20180401
+            gatheringresult(loo,1)=gatheringfactor; 
+            gatheringresult(loo,2)=sppamounts;
             disp(['Numbers of labels is ' ,num2str(labelsppno),' NOT ',num2str(sppamounts),' (number of specimens found), so retry different gatheringfactor.']);
-            if loo==length(gatheringfactorlist)        %test zone 20180401
-                [~,minloc]=min(abs(gatheringresult(:,2)-labelsppno));        %test zone 20180401
-                if minloc==loo        %test zone 20180401
-                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]);        %test zone 20180401
-                    break;        %test zone 20180401
-                else        %test zone 20180401
-                    gatheringfactor=gatheringresult(minloc,1);        %test zone 20180401
-                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]);        %test zone 20180401
-                    [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize);        %test zone 20180401
-                    %sppamounts=size(geomtry_osize,1);        %test zone 20180401
-                    disp(['Number of specimens found is: ' ,num2str(sppamounts),' .']);        %test zone 20180401
-                end   %test zone 20180401 
+            if loo==length(gatheringfactorlist)  
+                [~,minloc]=min(abs(gatheringresult(:,2)-labelsppno)); 
+                if minloc==loo 
+                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]); 
+                    break; 
+                else  
+                    gatheringfactor=gatheringresult(minloc,1);  
+                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]); 
+                    [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize); 
+                    disp(['Number of specimens found is: ' ,num2str(sppamounts),' .']);  
+                end 
             end
         end
-        %test zone 20180401
-        
         %If the number of labels in the list cannot match the image number, use
         %temporary label instead.
         if labelsppno ~= sppamounts
@@ -69,10 +64,8 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
     disp(['Boxes matrices for drawer: [',template,'] has been saved.']);
     
     %Save an image for drawer inspection
-    %resizeRatio=1/4;
     drawervisoutname=fullfile('Drawer_result',drawerInspectionDir,[template,'_drawerSpecimenBoxes.jpg']);
     figout=figure('visible', 'off');
-    %imresize(Wbalance{im},resizeRatio);
     imshow(imadjust(ref));
     hold on;
     for spp=1:size(geometry_osize,1)

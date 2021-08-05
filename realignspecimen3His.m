@@ -1,10 +1,9 @@
 function realignedcropedimgs=realignspecimen3His(cropedimgs,refno,pauseornot)
+%realign all bands to the reference band. Though this version is designed for brighter background, note that this is easily failed
+%when the background with shadows
+
 [geolen,imgn]=size(cropedimgs);
 imgDiffDistThreshold=45; %This value is derived from acceptable transformation results
-
-%Convert double quotes to single quotes for the matlab version prior than
-%2017
-%if size(pauseornot,2)==1 pauseornot=pauseornot{1};, end;
 
 disp('Start to align different images (bands) of a specimen');
 realignedcropedimgs=cell(geolen,imgn);
@@ -36,11 +35,8 @@ for in=1:geolen
         movingorigin=movingin;
         Idouble = im2double(grayImg(movingin)); 
         avg = mean2(Idouble);
-        %sigma = std2(Idouble);        
-        %movingAdj = imadjust(grayImg(movingin),[0, avg-0.5*sigma],[]); %Adjust the image for registration only
         fixedin=grayImg(fixedin); 
-        
-        %movingAdj = imadjust(grayImg(movingin),[0, 0.5*avg],[]); %Adjust the image for registration only
+ 
         %%%%%%%%%%%%
         SingleBandOverlap=cell(1,3);
         SingleBandDiffDist=cell(1,3);
@@ -126,10 +122,6 @@ for in=1:geolen
     for im=5:imgn-2
         movingin=cropedimgs{in,im}; 
         movingorigin=movingin;
-        %Idouble = im2double(grayImg(movingin)); 
-        %avg = mean2(Idouble);
-        %sigma = std2(Idouble);        
-        %movingAdj = imadjust(grayImg(movingin),[0, avg-0.5*sigma],[]); %Adjust the image for registration only
         fixedin=grayImg(fixedin); 
         RfixedRef= imref2d(size(fixedin));
         
@@ -144,10 +136,7 @@ for in=1:geolen
             else
                 nColors = 3;
                 ab = im2uint16(movingin);
-                %ab = im2uint8(movingin);
-                % repeat the clustering 3 times to avoid local minima
                 pixel_labels =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function available in only V.2018b
-                %[pixel_labels,~] =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function available in only V.2018b
                 movingAdj=imadjust(pixel_labels);
             end
 
@@ -200,7 +189,7 @@ for in=1:geolen
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 
     if pauseornot==1
-        pause(90) %Prevent CPU overheated. Turn off while using clusters
+        pause(90) %Prevent CPU overheated. Turn off while running the script on clusters
     end
     disp(['Specimen No. ',num2str(in),' out of ',num2str(geolen),' is aligned.']);
 end

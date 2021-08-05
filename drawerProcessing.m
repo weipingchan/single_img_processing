@@ -1,7 +1,6 @@
 function drawerProcessing(Img_directory, Code_directory, Result_directory, drawerInspectionDir, sppMatriceDir, sppInspectionDir,logHistoryDir, template, imgFiletype, labelfileName, scaleevidence, shapetemplateName, shapethreshold, maxarea2rectangleratio, reflectanceBlack, reflectanceWhite, pauseornot, legacy,manual)
 disp(['Start to analyze drawer: ', template]);
 %read the label file
-%[~,labelfile,~] = xlsread(fullfile(Code_directory,labelfileName));
 labelfile=readtable(fullfile(Code_directory,labelfileName));
 drawerlist=table2cell(labelfile(:,1));
 disp('The file including labels information is found.');
@@ -48,24 +47,20 @@ disp('A set of images is read into memory.');
 disp(['Variable of BLACK ref [[cen0], rad0]: [[',num2str(cen0(1)),',',num2str(cen0(2)),'],',num2str(rad0),']']);
 disp(['Variable of WHITE ref [[cen0], rad0]: [[',num2str(cen1(1)),',',num2str(cen1(2)),'],',num2str(rad1),']']);
 disp(['Variable [cmscale]: ',num2str(cmscale)]);
-%clear img0s
 
-if legacy==1
+if legacy==1 %If there are inconsistant small patches in the background, we carefully filter out small object detected
     MinimalObjectSize=ceil(size(wbimg0s{2},1)*size(wbimg0s{2},2)/4000); %Define the minimal size of an object
-    %MinimalObjectSize=ceil(size(wbimg0s{2},1)*size(wbimg0s{2},2)/6000); %Define the minimal size of an object
     darkThreshold=0.4; %Default dark threshold for previous platform
-else
-%     MinimalObjectSize=ceil(size(wbimg0s{2},1)*size(wbimg0s{2},2)/20000); %Define the minimal size of an object
-    MinimalObjectSize=round(ceil(size(wbimg0s{2},1)*size(wbimg0s{2},2)/20000)/3); %Define the minimal size of an object; updated July 2021
-    darkThreshold=0.1; %Default dark threshold for new platform
+else %if the background is clean, we use smaller threshold to include everything detected
+    MinimalObjectSize=round(ceil(size(wbimg0s{2},1)*size(wbimg0s{2},2)/20000)/3); %Define the minimal size of an object
+    darkThreshold=0.1; %Default dark threshold for the imaging platform we designed
 end
 
 %Find the corresponding labels and match with thenumber of specimens
 %Create temporary one if cannot find one
 
-%Detect if there is any correspnding manually-defined bounding box in the folder
+%Detect if there is a correspnding manually-defined bounding box in the folder
 boxInfoDir='manual_boxes';
-%Read the file list in the Img_directory
 box_ds = struct2dataset(dir(fullfile(Code_directory,boxInfoDir,'*_Boxes.mat')));
 box_listing=box_ds(:,1);
 if any(strcmp(box_listing.name,[template,'_Boxes.mat']))
@@ -73,27 +68,24 @@ if any(strcmp(box_listing.name,[template,'_Boxes.mat']))
 end
 
 if manual==0
-    %wbimg0s=historical_imgs_cropping(wbimg0s);
-    [wbimg0s,img0s]=historical_imgs_cropping2(wbimg0s,img0s);
-    disp('The stage region is cropped out');
+    [wbimg0s,img0s]=historical_imgs_cropping2(wbimg0s,img0s); %Crop unwanted bourder outside of the imaging platform if there is any
     gatheringfactorlist=[2, 5, 20,10,15]; %factor(pixel) to link object; when specismens are close, use smaller one; the default value used for drawer without label information is the 3rd place in the list
-    %[geometry_osize,specimenLabelList]=findCoraseOutlines(wbimg0s{2},template,drawerlist,labelfile,shapethreshold,maxarea2rectangleratio,gatheringfactorlist,MinimalObjectSize,drawerInspectionDir);
     [geometry_osize,specimenLabelList]=findCoraseOutlines(Unlinear_img(img0s{2}),template,drawerlist,labelfile,shapethreshold,maxarea2rectangleratio,gatheringfactorlist,MinimalObjectSize,Code_directory,drawerInspectionDir);
     disp(['Variable [MinimalObjectSize]: ',num2str(MinimalObjectSize)]);
 else
-    %wbimg0s=historical_imgs_cropping(wbimg0s);
-    [wbimg0s,~]=historical_imgs_cropping2(wbimg0s,img0s); %Added for dealing with historical image cropping issue
-    disp('The stage region is cropped out'); %Added for dealing with historical image cropping issue
+    [wbimg0s,~]=historical_imgs_cropping2(wbimg0s,img0s); %Crop unwanted bourder outside of the imaging platform if any
     disp(['Manually defined specimen boxes are used. Matrix name: [',[template,'_Boxes.mat]']]);
     [geometry_osize,specimenLabelList]=findCoraseOutlines_inputBoxes(wbimg0s{2},template,drawerlist,labelfile,drawerInspectionDir,Code_directory);
 end
 clear img0s
 
+%cookie-cutting specimen images from the drawer image
 cropedimgs=cropimg(wbimg0s,geometry_osize);
 clear wbimg0s
 disp('Specimen images are croped based on the bounding boxes.');
 
-refno=2; %Use 940 nm wavelength to  cut out specimens
+%realign multispectral images
+refno=2; %Use Near infrared (940 nm) as the reference image
 if legacy==1
     realignedcropedimgs=realignspecimen3His(cropedimgs,refno,pauseornot);
 else
@@ -101,12 +93,15 @@ else
 end
 clear cropedimgs
 
-%shapeTemplateIn=fullfile(Code_directory,shapetemplateName); %Feel lazy to remove this variable in all connected files
-% shapetemplate0=load(shapeTemplateIn);
-% shapetemplate=shapetemplate0.shape;
+%shapetemplateName; %Feel lazy to
+%remove this variable in all connected parental files though it is useless
+%now
+
+%Detet the outline of each specimen
 [realignedcropedsymimgs,sppmask,sppedge,finalCentroidList]=findSpecimenFineEdge4(realignedcropedimgs,darkThreshold);
 clear realignedcropedimgs
 
+%Save the results in all formats for archiving and inspection
 savedSpecimenResult2(realignedcropedsymimgs,sppmask,sppedge,imgtypes,template,sppMatriceDir,sppInspectionDir,specimenLabelList,cmscale,finalCentroidList);
 disp('Preliminary analysis finished! Results are saved.');
 diary off;

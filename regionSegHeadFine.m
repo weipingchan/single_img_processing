@@ -1,13 +1,11 @@
 function panel_r= regionSegHeadFine(panel,panel_seg2,panel_ed5,Cmask_head_fine)
-%[~,cL] = bwboundaries(Cmask_head_fine);
-%stats_cL = regionprops(cL, 'Area');
+%Focus on the head region in order to deal with the antenna issue
 %Find the optimal value of multiplyFactor
     factorlist=[];
     for multiplyFactor=2:0.1:10 
         panel_r=bwareaopen(imbinarize(panel_seg2+panel_ed5+panel*multiplyFactor,0.95),300);
         panel_ff=imfill(imdilate(imerode(panel_r,strel('disk',1)),strel('disk',1)),'hole');
         [sB,sL] = bwboundaries(bwareaopen(imclearborder(immultiply(panel_ff,Cmask_head_fine),4),100),'noholes');
-        %  [sB,~] = bwboundaries(panel_ff,'noholes');
         stats_sL = regionprops(sL, 'Area', 'EulerNumber');
         
         if (length(sB)==1) && (stats_sL.EulerNumber==1)
@@ -19,7 +17,6 @@ function panel_r= regionSegHeadFine(panel,panel_seg2,panel_ed5,Cmask_head_fine)
               factorlist=[factorlist; [multiplyFactor,perimeter,stats_sL.Area]];
         end
     end
-    
 %Assign a fake value for the following if judgement    
 if isempty(factorlist)
     factorlist=[0,0,0];
@@ -43,9 +40,9 @@ else
         movingbox=ceil(length(factorlist_n(:,2))*2/3);
     end
 
-    if (length(factorlist_n(:,2))< movingbox) || (movingbox<2) %added 20180412
-        cutfactor1=factorlist_n(ceil(length(factorlist_n(:,2))/2),1); %added 20180412
-    else  %added 20180412
+    if (length(factorlist_n(:,2))< movingbox) || (movingbox<2)
+        cutfactor1=factorlist_n(ceil(length(factorlist_n(:,2))/2),1); 
+    else
     
         Dvec = movingslope(factorlist_n(:,2),movingbox,1,0.1);
 
@@ -56,8 +53,7 @@ else
         else
             slopethreshold=min(yy1);
         end
-        %slopethreshold=mean(factorlist_n(:,2));
-        %slopethreshold=mean([max(Dvec),min(Dvec)]);
+
          [~, thres] = min(abs(Dvec-slopethreshold) );
          if thres ==length(factorlist_n(:,1))
              thresf=thres;
@@ -66,15 +62,14 @@ else
          end
 
         cutfactor1=factorlist_n(thresf,1);
-    end  %added 20180412
+    end 
     
     
-    if (length(factorlist(:,2))< 3) %added 20180417
-        cutfactor2=factorlist(ceil(length(factorlist(:,1))/2),1); %added 20180417
+    if (length(factorlist(:,2))< 3) 
+        cutfactor2=factorlist(ceil(length(factorlist(:,1))/2),1);
     else
-        %Use moving slop to find the transition of perimeter of the object
+        %Use moving slope to find the transition of perimeter of the object
         Dvec2 = movingslope(factorlist(:,3),3,1,0.1);
-        %[~,locs,~,proms] = findpeaks(Dvec2,factorlist(:,1));
         [~,locs,~,proms] = findpeaks(Dvec2);
 
         peaksloc=find(proms>mean(proms));
@@ -92,7 +87,6 @@ else
         cutfactor2=factorlist(thresf2,1);
     end
     cutfactor=mean([cutfactor1,cutfactor2]);
-    %panel_r=imfill(bwareaopen(imbinarize(panel_seg2+panel_ed5+panel*cutfactor,0.95),300),'hole');
     panel_r=imerode(imfill(imdilate(bwareaopen(imbinarize(panel_seg2+panel_ed5+panel*cutfactor,0.95),300),strel('disk',2)),'hole'),strel('disk',1));
 end
 end

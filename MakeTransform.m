@@ -1,4 +1,5 @@
 function cout=MakeTransform(operation, c1, c2)
+%derive the transformation matrix for two sets of points
 switch operation
     case 't' % do transformation
         switch size(c1,2)

@@ -1,5 +1,6 @@
 function [conjPt, forehindCorner,beltHpar] =findForeHindCorner(nStrongCornersList,nSectionList,mask,realCen,symAxis,tarCorner,boundingBox,slopeSwitch)
-
+%To find the gap point of fore-and hindwings
+%Moving parameter searching is applied in order to find the more accurate targets
 beltHparList=[0.2:0.01:0.25];
 beltHpars=[];
 nsecn=1;
@@ -11,10 +12,6 @@ nsecn=1;
             nSection=nSectionList(nsec);
             disp(['Section number: ',num2str(nSection)]);
             %%
-            %slopeSwitchList=['wingEdge','cenAxis'];
-            %for slopeSwitchN=1:length(slopeSwitchList)
-                   %Use different slope references: Automatically detected wing edge OR central vertical axis
-                    %slopeSwitch=slopeSwitchList(slopeSwitchN);
                     for beltNo=1:length(beltHparList)
                         beltHpar=beltHparList(beltNo);
                         disp('     ');
@@ -24,33 +21,24 @@ nsecn=1;
                             beltWpar=0.1;
                             disp(['Try belt width parameter: ',num2str(beltWpar)]);
                             forehindCorner0=find_fore_hind_corner(mask,nStrongCorners,realCen,symAxis,tarCorner,nSection,boundingBox,beltWpar,beltHpar,slopeSwitch);
-                            %disp('It works.');
-                            if isempty(forehindCorner0)
-                                %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);                           
+                            if isempty(forehindCorner0)                        
                             end
                         catch
-                            %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);
                             try
                                 beltWpar=0.2;
                                 disp(['Try belt width parameter: ',num2str(beltWpar)]);
                                 forehindCorner0=find_fore_hind_corner(mask,nStrongCorners,realCen,symAxis,tarCorner,nSection,boundingBox,beltWpar,beltHpar,slopeSwitch);
-                                %disp('It works.');
-                                if isempty(forehindCorner0)
-                                    %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);                           
+                                if isempty(forehindCorner0)                         
                                 end
                             catch
-                                %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);
                                 try
                                     beltWpar=0.3;
                                     disp(['Try belt width parameter: ',num2str(beltWpar)]);
                                     forehindCorner0=find_fore_hind_corner(mask,nStrongCorners,realCen,symAxis,tarCorner,nSection,boundingBox,beltWpar,beltHpar,slopeSwitch);
-                                    %disp('It works.');
                                     if isempty(forehindCorner0)
-                                        %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);
                                         disp([num2str(beltHpar),' as the belt height parameter DOES NOT work.']);
                                     end
                                 catch
-                                    %disp([num2str(beltWpar),' as the belt width parameter DOES NOT work.']);
                                     forehindCorner0=[]; %If every try doesn't work, assign an empty list to the vector.
                                     disp([num2str(beltHpar),' as the belt height parameter DOES NOT work.']);
                                 end
@@ -61,8 +49,6 @@ nsecn=1;
                         if ~isempty(forehindCorner0)
                             forehindCorner(nsecn,:)=forehindCorner0;
                             beltHpars=[beltHpars, beltHpar];
-                            %disp([num2str(beltWpar),' as the belt width parameter WORKS.']);
-                            %disp(['Parameter [beltWpar]: ',num2str(beltWpar)]);
                             disp('############################################');
                             disp('     ');
                             disp([num2str(beltHpar),' as the belt height parameter WORKS.']);
@@ -72,10 +58,6 @@ nsecn=1;
                             nsecn=nsecn+1;
                             break
                         else
-                            %forehindCorner(nsecn,:)=[0 0];
-                            %nsecn=nsecn+1;
-                            %disp([num2str(nSection),' as the section number parameter DOES NOT work.']);
-                            %disp('Parameter [forehindCorner0]: 0 0');
                         end
                     end
                     %%

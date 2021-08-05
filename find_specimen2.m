@@ -1,6 +1,6 @@
 function [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize)
-%MinimalObjectSize=ceil(nrow*ncol/4000); 
-%ref=imgOnStage(ref); Removed on 20180411
+%Search for the location of specimens in an image
+
 disp('Start to find coarse outlines of specimens.');
 ref_thumbnail=imresize(ref,1/4,'method','bilinear');
 [nrow,ncol]=size(ref);
@@ -28,84 +28,80 @@ fig3=bwareaopen(imerode(imresize(bwareaopen(imdilate(imbinarize(imclearborder(fi
 
 [edB,edL,edN] = bwboundaries(fig3,'noholes');
 statsed = regionprops(edL,'Area','Centroid','PixelIdxList','MajorAxisLength','MinorAxisLength','BoundingBox');
-%figure,imshow(ref_thumbnail); hold on;
+
 geometry=[];
-for k = 1:edN
+for k = 1:ed
+    % obtain (X,Y) boundary coordinates corresponding to label 'k'
+    boundary = edB{k};
 
-  % obtain (X,Y) boundary coordinates corresponding to label 'k'
-  boundary = edB{k};
+    % compute a simple estimate of the object's perimeter
+    delta_sq = diff(boundary).^2;    
+    perimeter = sum(sqrt(sum(delta_sq,2)));
 
-  % compute a simple estimate of the object's perimeter
-  delta_sq = diff(boundary).^2;    
-  perimeter = sum(sqrt(sum(delta_sq,2)));
-  
-  % obtain the area calculation corresponding to label 'k'
-  area = statsed(k).Area;
-  
-  % compute the roundness metric
-  metric = 4*pi*area/perimeter^2;
- 
-  % calculate the maximal and minimal axes length
- len=statsed(k).MajorAxisLength;
-  wid=statsed(k).MinorAxisLength;
-  
-  % calculate the area of bounding box
-  boxl=statsed(k).BoundingBox(3);
- boxw=statsed(k).BoundingBox(4);
-  boxarea=boxl*boxw;
-  area2boxarea=area/boxarea;
- 
-  
-% 3 situations are avoided: Circle, Rectangle, and long shape
-  % mark objects above the threshold with a black circle
-  if (metric < shapethreshold) && (area2boxarea<maxarea2rectangleratio) && (len/wid<3)
-  %plot(boundary(:,2), boundary(:,1), 'r', 'LineWidth', 1);
-  geometry=[geometry,statsed(k)];
-  end
+    % obtain the area calculation corresponding to label 'k'
+    area = statsed(k).Area;
+
+    % compute the roundness metric
+    metric = 4*pi*area/perimeter^2;
+
+    % calculate the maximal and minimal axes length
+    len=statsed(k).MajorAxisLength;
+    wid=statsed(k).MinorAxisLength;
+
+    % calculate the area of bounding box
+    boxl=statsed(k).BoundingBox(3);
+    boxw=statsed(k).BoundingBox(4);
+    boxarea=boxl*boxw;
+    area2boxarea=area/boxarea;
+
+    % 3 situations are avoided: Circle, Rectangle, and long shape since it may be the scale or standard references
+    % mark objects above the threshold with a black circle
+    if (metric < shapethreshold) && (area2boxarea<maxarea2rectangleratio) && (len/wid<3)
+    geometry=[geometry,statsed(k)];
+    end
 end
 
 %%% 2.4.4 Reindex objects
-            [~,obj_num]=size(geometry);
-            
-            if prod(size(geometry))==0 %added 20180412
-                sppamounts=0;  %added 20180412
-                obj_box=[5,5,size(ref,1)-10,size(ref,2)-10];  %added 20180412
-                disp('CANNOT find any specimen. A box approaching image size is provided');  %added 20180412
-            else
-                sppamounts=obj_num;  %added 20180412
-                if obj_num==1 %add 20180408
-                    obj_box=geometry.BoundingBox; %add 20180408
-                else %add 20180408
-                    obj_box=cat(1,geometry.BoundingBox);
-               
-                    xb=obj_box(:,1)+obj_box(:,3)/2;
-                    yb=obj_box(:,2)+obj_box(:,4)/2;
-                    dxb=mean(obj_box(:,3));
-                    dyb=mean(obj_box(:,4));
+[~,obj_num]=size(geometry);
 
-                    box_ind=1:obj_num;
-                    col=zeros(size(xb));
-                    while sum(~col)
-                        temp = ( max(xb(~col))-xb ) / dxb;
-                        temp = temp < 1;
-                        temp = box_ind(temp);
-                        col(temp) = col(temp) + 1;
-                    end
-                    [ ~, I ] = sort(col+(yb-1)/max(yb));
-                    geometry=geometry(I);
-                    clear box_ind col temp I xb yb dxb dyb col
+if prod(size(geometry))==0
+    sppamounts=0; 
+    obj_box=[5,5,size(ref,1)-10,size(ref,2)-10]; 
+    disp('CANNOT find any specimen. A box approaching image size is provided');
+else
+    sppamounts=obj_num; 
+    if obj_num==1
+        obj_box=geometry.BoundingBox;
+    else
+        obj_box=cat(1,geometry.BoundingBox);
 
-                    obj_box=cat(1,geometry.BoundingBox); % obj order is rearranged
-            end
-            end %add 20180408
+        xb=obj_box(:,1)+obj_box(:,3)/2;
+        yb=obj_box(:,2)+obj_box(:,4)/2;
+        dxb=mean(obj_box(:,3));
+        dyb=mean(obj_box(:,4));
+
+        box_ind=1:obj_num;
+        col=zeros(size(xb));
+        while sum(~col)
+            temp = ( max(xb(~col))-xb ) / dxb;
+            temp = temp < 1;
+            temp = box_ind(temp);
+            col(temp) = col(temp) + 1;
+        end
+        [ ~, I ] = sort(col+(yb-1)/max(yb));
+        geometry=geometry(I);
+        clear box_ind col temp I xb yb dxb dyb col
+
+        obj_box=cat(1,geometry.BoundingBox); % obj order is rearranged
+    end
+end
 
 siz=size(ref);
 [geolen,~]=size(obj_box);
-% Crop the individual objects and store them in a cell
-%edn=max(edL(:)); % number of objects
+% Crop individual objects and store each of them in a cell
 geometry_osize=cell(geolen,1);
 for i=1:geolen
-      % Get the bb of the i-th object and offest by 2 pixels in all
+      % Get the bounding box of the i-th object and offest by 2 pixels in all
       % directions
       bb_i=ceil(obj_box(i,:));
       idx_x=[bb_i(1)-20 bb_i(1)+bb_i(3)+20];

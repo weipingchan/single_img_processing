@@ -1,4 +1,7 @@
 function [Wbalance, cen1, rad1, cen0, rad0, cmscale]=whiteBalance2(imgs,shapethreshold,reflectanceBlack,reflectanceWhite,evidence,template)
+%Correct the pixel value of entire image according to the standard references.
+%The pixel value in the output product indicates reflectance
+
 Wbalance=cell(9,1);
 disp('Start to find round shape references and the scale.');
 %find the references and the scale in cm; px1: white ref value; px0: black
@@ -99,9 +102,6 @@ end
     sppimgsoverviewRGB=vertcat(sppimgsoverview0RGB,sppimgsoverview1RGB2);
     
     sppvisoutname=fullfile('Drawer_result',template,[template,'_visualization'],[template,'_drawerAllBands.jpg']);
-    %figall=figure('visible', 'off');
-    %imshow(sppimgsoverviewRGB);
-    %saveas(figall, sppvisoutname);    
     imwrite(sppimgsoverviewRGB, sppvisoutname);    
         
     disp('Overview of all bands is saved.');
@@ -120,11 +120,7 @@ end
     imgsoverviewRGB=vertcat(imgsoverview0RGB,imgsoverview1RGB2);
 
     sppvisoutname=fullfile('Drawer_result',template,[template,'_visualization'],[template,'_drawersRaw.jpg']);
-    %figall=figure('visible', 'off');
-    %imshow(imgsoverviewRGB);
-    %saveas(figall, sppvisoutname);
     imwrite(uint8(imgsoverviewRGB/256), sppvisoutname);
-    
-    
+
     disp('Original images of all bands are saved.');
 end

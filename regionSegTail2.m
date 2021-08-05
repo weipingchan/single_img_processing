@@ -1,12 +1,12 @@
 function panel_r= regionSegTail2(panel,panel_seg2,panel_ed5,mask4)
+%Focus on the rare end of abdomen in order to solve the issue of entangled legs
+
 %Find the optimal value of multiplyFactor
     factorlist=[];
     for multiplyFactor=2:0.1:10
         panel_r=bwareaopen(imbinarize(panel_seg2+panel_ed5+panel*multiplyFactor,0.95),300);
         panel_ff=imfill(imerode(imdilate(panel_r,strel('disk',2)),strel('disk',2)),'hole');
         [sB,~] = bwboundaries(bwareaopen(imclearborder(immultiply(panel_ff,mask4),4),100),'noholes');
-        %  [sB,~] = bwboundaries(panel_ff,'noholes');
-
         if length(sB)==1
               % obtain (X,Y) boundary coordinates corresponding to label 'k'
               boundary = sB{1};
@@ -17,7 +17,7 @@ function panel_r= regionSegTail2(panel,panel_seg2,panel_ed5,mask4)
         end
     end
     
-%Assign a fake value for the following if judgement
+%Assign a fake value if the following judgement is true
 if isempty(factorlist)
     factorlist=[0,0,0];
 end
@@ -55,8 +55,6 @@ else
                     else
                         slopethreshold=min(yy1);
                     end
-                    %slopethreshold=mean(factorlist_n(:,2));
-                    %slopethreshold=mean([max(Dvec),min(Dvec)]);
                      [~, thres] = min(abs(Dvec-slopethreshold) );
                      if thres ==length(factorlist_n(:,1))
                          thresf=thres;

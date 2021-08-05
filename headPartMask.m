@@ -1,5 +1,6 @@
 function [panel_head_ready2, mask_head]= headPartMask(panel,panel_seg2,panel_ed5,mask2,mask3)
-    %panel_head= regionSegHead(panel,panel_seg2,panel_ed5,mask2);
+    %Focus on the head region in order to take care of the diverse antenna issue
+    
     panel_head= panel_ed5;
     %Create the mask of head region
     head_neg=bwareaopen(immultiply(imcomplement(panel_head),mask3),2000);
@@ -17,8 +18,7 @@ function [panel_head_ready2, mask_head]= headPartMask(panel,panel_seg2,panel_ed5
     tops_head = boxes_head(:,2);
     bottoms_head = tops_head + boxes_head(:,4);
     lowermid_head=[mean([lefts_head,rights_head]),bottoms_head];
-    
-    %figure, imshow(immultiply(panel_head,Cmask_head_con));
+
     %Examine the connection between antenna and head
     Cmask_head_fine=createCirclesMask(panel, lowermid_head, boxes_head(:,3)/12);
     [head_fineB,head_fineL] = bwboundaries(bwareaopen(immultiply(panel_head,Cmask_head_fine),150),'noholes');
@@ -39,7 +39,7 @@ function [panel_head_ready2, mask_head]= headPartMask(panel,panel_seg2,panel_ed5
     %create a negetive mask of refined head region
     oppCmask_fine=imcomplement(Cmask_head_fine);
     panel_head_ready=imfill(imerode(imdilate(immultiply(panel_head_fine,Cmask_head_fine)+immultiply(panel_head,oppCmask_fine),strel('disk',2)),strel('disk',2)),'hole');
-    Cmask_head=createCirclesMask(panel, lowermid_head, boxes_head(:,3)/(7 + (boxes_head(:,3) + 100)/500)); %modified Feb. 15, 2020
+    Cmask_head=createCirclesMask(panel, lowermid_head, boxes_head(:,3)/(7 + (boxes_head(:,3) + 100)/500));
     mask_head=imfill(Cmask_head+head_neg,'hole');
     panel_head_ready2=bwareaopen(immultiply(panel_head_ready,mask_head),300);
 end

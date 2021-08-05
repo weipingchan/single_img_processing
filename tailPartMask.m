@@ -1,4 +1,5 @@
 function [panel_tail_ready2, mask_tail]= tailPartMask(panel,panel_seg2,panel_ed5,mask4,mask5)
+%Focus on the rear end of the abdomen in order to deal with entangled legs
     panel_body= regionSegTail2(panel,panel_seg2,panel_ed5,mask4);
     panel_body_ready=imerode(imdilate(panel_body,strel('disk',2)),strel('disk',2));
     %Create the mask of tail region

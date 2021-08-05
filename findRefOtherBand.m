@@ -1,5 +1,6 @@
 function [px1, px0] = findRefOtherBand(img, cen1, rad1, cen0, rad0,blackP,whiteP)
-
+%extract the reflectance on the standard black and white references and get
+%the pixel value for the real 0 and 1 reflectance
 px0=refVal(img,cen0,rad0);
 px1=refVal(img,cen1,rad1);
 
@@ -8,13 +9,13 @@ if mean(px0)<0
     px0=refNoBlack(img,cen0,rad0);  %Use the black plastic circcle as black reference 
 end
 
-%Find the real 0 reflectance an 1 reflectance value
+%Find the corresponding pixel value for the real 0 and 1 reflectance
 if rad0>0
     [px0(1), px1(1)]=findRealpx0px1(px0(1), blackP, px1(1), whiteP);
     [px0(2), px1(2)]=findRealpx0px1(px0(2), blackP, px1(2), whiteP);
     [px0(3), px1(3)]=findRealpx0px1(px0(3), blackP, px1(3), whiteP);
 elseif mean(px0)>0
-    blackP=11.4519; %if use black platform as the black reference
+    blackP=11.4519; %the reference platform is used as the black reference; This value is according to the standard reference we used.
     [px0(1), px1(1)]=findRealpx0px1(px0(1), blackP, px1(1), whiteP);
     [px0(2), px1(2)]=findRealpx0px1(px0(2), blackP, px1(2), whiteP);
     [px0(3), px1(3)]=findRealpx0px1(px0(3), blackP, px1(3), whiteP);

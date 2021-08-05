@@ -1,8 +1,9 @@
 function [wingVector,tanRefPt] = findWingVector(maskf2,realCen,boundingBox,verVector,part)
-%%This function is used to find the tangent slope at the side of the wing
-% through analyzing the minimal bounding triangle multiple times, the slope
-% at the side of wings should always be the same, thus the most frequent
-% one.
+%%This function is used to find the tangent slope at the outter side of a
+%%pair of fore and hindwings.
+% By identifying the minimal bounding triangle multiple times with changing windows sizes, the slope
+% at the outter side of wings should always be the same in most cases, so the most frequent
+% one is our target.
 
 prebeltWparList=[0.15,0.2,0.25,0.3,0.35,0.4,0.5];
 vecTriList=[];

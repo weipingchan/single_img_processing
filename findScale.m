@@ -1,4 +1,7 @@
 function [cmscale,GscaleUR,GscaleLL,scaleBox] = findScale(img,evidence)
+%Identify the scale bar and extract the number of pixels for one centimeter
+%according to the scale bar
+
 %Find the location of a scale bar
 scaleBox=findScale1(img,evidence);
 
@@ -19,7 +22,7 @@ sceneImage=imadjust(rgb2gray(img));
 
 boxPoints = detectSURFFeatures(boxImage);
 scenePoints = detectSURFFeatures(sceneImage);
-scenePoints = scenePoints(scenePoints.Location(:,1)<ceil(size(img,2)/3),:); %Restrict the POI to 1/3 left side of the board
+scenePoints = scenePoints(scenePoints.Location(:,1)<ceil(size(img,2)/3),:); %Restrict the points of interest to 1/3 left side of the board
 
 [boxFeatures, boxPoints] = extractFeatures(boxImage, boxPoints);
 [sceneFeatures, scenePoints] = extractFeatures(sceneImage, selectStrongest(scenePoints,ceil(size(scenePoints,1)/3)));

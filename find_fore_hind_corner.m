@@ -1,5 +1,6 @@
 function forehindCorner=find_fore_hind_corner(mask,nStrongCorners,realCen,symAxis,tarCorner,nSection,boundingBox,beltWpar,beltHpar,slopeSwitch)
-%Detect all salinent points
+%To find the gap point of fore-and hindwings
+%Detect all corner points
 corners = detectHarrisFeatures(mask);
 if nStrongCorners<size(corners.Location,1)
     Corners=corners.selectStrongest(nStrongCorners).Location;
@@ -29,10 +30,9 @@ if strcmp(slopeSwitch,'cenAxis')
 else
     [wingVector, tanRefPt] = findWingVector(maskf2,realCen,boundingBox,verVector,part); %The function to find wind edge vector
     disp('Using automatically detected slope of the wing edge as the vector');
-    %disp(['Parameter [wingVector]: ',num2str(beltWpar)]);
-    %disp(['Parameter [tanRefPt]: ',num2str(tanRefPt)]);
 end
 
+% This chunk is preserved for debugging
 % tt=[realCen+wingVector;realCen-wingVector];
 % figure,imshow(maskf2);hold on;
 % plot(tt(:,1),tt(:,2),'r');
@@ -41,22 +41,15 @@ end
 %Derive the belt information
 beltwidth=boundingBox(3)*beltWpar;
 
-%if boundingBox(3)/boundingBox(4)>2
-    %beltheight=boundingBox(4)*0.15;
-%else boundingBox(3)/boundingBox(4)>0.5
-    beltheight=boundingBox(4)*beltHpar;
-%end
+beltheight=boundingBox(4)*beltHpar;
 beltupper=[realCen+[0 +round(beltheight/2)]-horVector ; realCen+[0 +round(beltheight/2)]+horVector];
 beltlower=[realCen+[0 -round(beltheight/2)]-horVector ; realCen+[0 -round(beltheight/2)]+horVector];
 horBeltRegion=[beltupper;flip(beltlower,1)];
 
-
+% This chunk is preserved for debugging
 % figure,imshow(maskf2);hold on;
 % plot(horBeltRegion(:,1),horBeltRegion(:,2),'r');
 
-%horSolvB=[-horVector(2)/horVector(1);1];
-%beltlowerB=dot(beltlower(1,:),horSolvB);
-%beltlowerLine=[horVector(2)/horVector(1); beltlowerB];
 %%
 %Find all edge points
 [specimenB,~]=bwboundaries(mask);
@@ -97,7 +90,7 @@ intersectDistPtsCount2=intersectDistPtsCount; %preserve the original result
 intersectDistPtsCount2(intersectDistPtsCount2>0)=1; %having value in belt -> 1
 intersectDistPtsCount2(1)=0; %first value -> 1 prevent error
 
-% Detect the changing point of Number of segments
+% Detect the changing point for number of segments
 intersectSegCountDiff=diff(intersectSegCount);
 intersectSegCountDiff2=sign([0,intersectSegCountDiff]);
 IdxLinear=findchangepts(intersectSegCount,'MaxNumChanges',6,'Statistic','linear'); %THE NUMBER OF CHANGING PT here is sensitve to damaged wings. 6 is enough in most cases.
@@ -171,7 +164,6 @@ while size(closest2Pts,1)<2
     %The 2 intersect points on the target segment line
     closest2Pts=intersectDistPts(intersectDistPts(:,1)==intersectLoc2,2:end);
      if intersectLoc2>intersectLoc+2 || intersectLoc2>length(segPt2UL)
-%          disp(['[intersectLoc2]: ',num2str(intersectLoc2)]);
          break
      else
         intersectLoc2=intersectLoc2+1;

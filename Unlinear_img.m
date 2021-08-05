@@ -1,4 +1,5 @@
 function ref=Unlinear_img(ref0)
+%rescale images to reach the highest contrast
     redres = imadjust(ref0(:,:,1));
     greenres = imadjust(ref0(:,:,2));
     blueres = imadjust(ref0(:,:,3));

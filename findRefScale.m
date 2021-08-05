@@ -1,4 +1,6 @@
 function [px1, px0, cen1, rad1, cen0, rad0, cmscale,GscaleUR,GscaleLL,scaleBox] = findRefScale(img, shapethreshold, evidence,blackP,whiteP)
+%Find the white, balck standard references and the scale according to the
+%input image (should be in NIR wavelength band)
 
 %Find white and black reference
 [cen1, rad1,cen0, rad0, refscale0] = findRef(img,shapethreshold);
@@ -27,7 +29,8 @@ if (rad1>0) && (mean(px0)<0 || mean(px0)>300)
     disp('The BLACK reference found in the previous step is fake, so it is disgarded.');
 end
 
-%Find the real 0 reflectance an 1 reflectance value
+%extract the reflectance on the standard black and white references and get
+%the pixel value for the real 0 and 1 reflectance
 if rad0>0 && mean(px0)<300
     [px0(1), px1(1)]=findRealpx0px1(px0(1), blackP, px1(1), whiteP);
     [px0(2), px1(2)]=findRealpx0px1(px0(2), blackP, px1(2), whiteP);
@@ -76,8 +79,6 @@ end
             redChannel = img(:,:,1); % Red channel
             greenChannel = img(:,:,2); % Green channel
             blueChannel = img(:,:,3); % Blue channel
-
-            %maskedImage = bsxfun(@times, img, cast(circleImage,class(img)));
             redRef=BT0(redChannel ,circleImage);
             greenRef=BT0(greenChannel ,circleImage);
             blueRef=BT0(blueChannel ,circleImage);
@@ -92,15 +93,14 @@ end
             redBb=redB(redB<midB);
              [counts, binlocation] = imhist(redBb);  %plus whatever option you used for imhist
             [~, indices] = sort(counts,'descend');    %sort your histogram
-            %peakvalues = sortedcount(1:3);              %highest 3 count in the histogram
             peakloc = mean(binlocation(indices(1:3)));  %respective image intensities for these peaks
         end
  end
     
 function [reff0, reff1]=findRealpx0px1(sblackStd, blackP, swhiteStd, whiteP)
-lincoef = polyfit([blackP, whiteP], [sblackStd, swhiteStd], 1);
-reff0=lincoef(2);
-reff1=lincoef(1)*100+lincoef(2);
+    lincoef = polyfit([blackP, whiteP], [sblackStd, swhiteStd], 1);
+    reff0=lincoef(2);
+    reff1=lincoef(1)*100+lincoef(2);
 end
 
 end
