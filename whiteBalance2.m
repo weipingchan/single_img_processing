@@ -97,7 +97,7 @@ end
 
     sppimgsoverview0=[outpanel{1:3}];
     sppimgsoverview0RGB=cat(3,sppimgsoverview0,sppimgsoverview0,sppimgsoverview0);
-    sppimgsoverview1RGB=[cat(3,outpanel{4},outpanel{4},outpanel{4}),outpanel{5:7}];
+    sppimgsoverview1RGB=[outpanel{9},outpanel{5:7}];
     sppimgsoverview1RGB2=imresize(sppimgsoverview1RGB,size(sppimgsoverview0RGB,2)/size(sppimgsoverview1RGB,2));
     sppimgsoverviewRGB=vertcat(sppimgsoverview0RGB,sppimgsoverview1RGB2);
     
