@@ -80,7 +80,7 @@ if cmscale>0
 line(scaleBox(:, 1), scaleBox(:, 2), 'Color', 'y' ,'LineWidth', 3);
 end
 hold off;
-saveas(fig, refScaleOutname);
+export_fig(fig, refScaleOutname, '-jpg', '-r100');
 close(fig);
 disp('An RGB image with identified references and scale is saved.');
 
