@@ -74,7 +74,7 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
         rectangle('Position', position_box, 'EdgeColor','r', 'LineWidth', 1);
     end
     hold off;
-    saveas(figout, drawervisoutname);
+    export_fig(figout, drawervisoutname, '-jpg', '-r100');
     close(figout);
     disp('An image with identified boxes of specimens has been saved.');
 end
