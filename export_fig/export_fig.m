@@ -69,7 +69,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
 %   2) For bitmap formats, only opengl correctly renders transparent patches
 %   3) For bitmap formats, only painters correctly scales line dash and dot
 %      lengths when magnifying or anti-aliasing
-%   4) Fonts may be substitued with Courier when using painters
+%   4) Fonts may be substituted with Courier when using painters
 %
 % When exporting to vector format (PDF & EPS) and bitmap format using the
 % painters renderer, this function requires that ghostscript is installed
@@ -201,7 +201,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
 % The idea of appending figures in pdfs came from Matt C in comments on the
 % FEX (id: 23629)
 
-% Thanks to Roland Martin for pointing out the colour MATLAB
+% Thanks to Roland Martin for pointing out the color MATLAB
 % bug/feature with colorbar axes and transparent backgrounds.
 % Thanks also to Andrew Matthews for describing a bug to do with the figure
 % size changing in -nodisplay mode. I couldn't reproduce it, but included a
@@ -470,7 +470,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                 displaySuggestedWorkarounds = false;
                 error('For bitmap output (png,jpg,tif,bmp) the padding value (-p) must be between -1<p<1')
             end
-            % Get the background colour
+            % Get the background color
             if options.transparent && (options.png || options.alpha)
                 % Get out an alpha channel
                 % MATLAB "feature": black colorbar axes can change to white and vice versa!
@@ -489,13 +489,13 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     xCol = sum(xCol, 2);
                 end
                 % MATLAB "feature": apparently figure size can change when changing
-                % colour in -nodisplay mode
+                % color in -nodisplay mode
                 pos = get(fig, 'Position');
-                % Set the background colour to black, and set size in case it was
+                % Set the background color to black, and set size in case it was
                 % changed internally
                 tcol = get(fig, 'Color');
                 set(fig, 'Color', 'k', 'Position', pos);
-                % Correct the colorbar axes colours
+                % Correct the colorbar axes colors
                 set(hCB(yCol==0), 'YColor', [0 0 0]);
                 set(hCB(xCol==0), 'XColor', [0 0 0]);
                 % Correct black axes color to off-black (issue #249)
@@ -517,7 +517,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
 
                 % Set background to white (and set size)
                 set(fig, 'Color', 'w', 'Position', pos);
-                % Correct the colorbar axes colours
+                % Correct the colorbar axes colors
                 set(hCB(yCol==3), 'YColor', [1 1 1]);
                 set(hCB(xCol==3), 'XColor', [1 1 1]);
                 % Revert the black axes colors
@@ -536,7 +536,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     A = single(print2array(fig, magnify/options.aa_factor, renderer));
                 end
 
-                % Set the background colour (and size) back to normal
+                % Set the background color (and size) back to normal
                 set(fig, 'Color', tcol, 'Position', pos);
                 % Compute the alpha map
                 alpha = round(sum(B - A, 3)) / (255 * 3) + 1;
@@ -544,7 +544,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                 A(A==0) = 1;
                 A = B ./ A(:,:,[1 1 1]);
                 clear B
-                % Convert to greyscale
+                % Convert to grayscale
                 if options.colourspace == 2
                     A = rgb2grey(A);
                 end
@@ -577,7 +577,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     % Clear the png bit
                     options.png = false;
                 end
-                % Return only one channel for greyscale
+                % Return only one channel for grayscale
                 if isbitmap(options)
                     A = check_greyscale(A);
                 end
@@ -601,7 +601,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                 % Print large version to array
                 if options.transparent
                     % MATLAB "feature": apparently figure size can change when changing
-                    % colour in -nodisplay mode
+                    % color in -nodisplay mode
                     pos = get(fig, 'Position');
                     tcol = get(fig, 'Color');
                     set(fig, 'Color', 'w', 'Position', pos);
@@ -618,10 +618,10 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                 % Downscale the image
                 A = downsize(A, options.aa_factor);
                 if options.colourspace == 2
-                    % Convert to greyscale
+                    % Convert to grayscale
                     A = rgb2grey(A);
                 else
-                    % Return only one channel for greyscale
+                    % Return only one channel for grayscale
                     A = check_greyscale(A);
                 end
                 % Outputs
@@ -1132,7 +1132,7 @@ function [fig, options] = parse_args(nout, fig, varargin)
                     case 'rgb'
                         options.colourspace = 0;
                     case 'cmyk'
-                        options.colourspace = 1;
+                        options.space = 1;
                     case {'gray', 'grey'}
                         options.colourspace = 2;
                     case {'a1', 'a2', 'a3', 'a4'}
@@ -1416,7 +1416,7 @@ function A = rgb2grey(A)
 end
 
 function A = check_greyscale(A)
-    % Check if the image is greyscale
+    % Check if the image is grayscale
     if size(A, 3) == 3 && ...
             all(reshape(A(:,:,1) == A(:,:,2), [], 1)) && ...
             all(reshape(A(:,:,2) == A(:,:,3), [], 1))

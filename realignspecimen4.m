@@ -143,7 +143,7 @@ for in=1:geolen
                 nColors = 3;
                 ab = im2uint16(movingin);
                 % repeat the clustering 3 times to avoid local minima
-                pixel_labels =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function available in only V.2018b
+                pixel_labels =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function is available in only V.2018b
                 movingAdj=imadjust(pixel_labels);
             end
 
@@ -167,7 +167,7 @@ for in=1:geolen
         
         remainingList=[[6,7];[5,7];[5,6]];
     if imgDiffDist<imgDiffDistThreshold
-        WhiteFixedin=cropedimgs{in,WhiteMinOverlapIdx+4}; %Use the best RGB image as the registration template to register the rests
+        WhiteFixedin=cropedimgs{in,WhiteMinOverlapIdx+4}; %Use the best RGB image as the registration template to register the rest
         RfixedRef= imref2d(size(WhiteFixedin));
         movingRegisteredAffineWithIC= imwarp(WhiteFixedin,Whitetform,'OutputView',RfixedRef); 
         realignedcropedimgs{in,WhiteMinOverlapIdx+4}= movingRegisteredAffineWithIC;
@@ -196,7 +196,7 @@ for in=1:geolen
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if pauseornot==1
-        pause(90) %Prevent CPU overheated. Turn off while running the script on clusters
+        pause(90) %Prevent CPU from overheating. Turn off while running the script on clusters
     end
     disp(['Specimen No. ',num2str(in),' out of ',num2str(geolen),' is aligned.']);
 end

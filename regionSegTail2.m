@@ -17,7 +17,7 @@ function panel_r= regionSegTail2(panel,panel_seg2,panel_ed5,mask4)
         end
     end
     
-%Assign a fake value if the following judgement is true
+%Assign a fake value if the following judgment is true
 if isempty(factorlist)
     factorlist=[0,0,0];
 end
@@ -26,7 +26,7 @@ if length(factorlist(:,1))<2
     panel_r=bwareaopen(panel_seg2+panel_ed5,100);
 else
     if min(factorlist(:,1))<7.5
-        %Use moving slop to find the transitio of perimeter of the object
+        %Use moving slop to find the transition of perimeter of the object
         %Drop the value after peak value because it saturates the image panel
         factorlist=factorlist(factorlist(:,1)<8,:);
         [~,IndM] = max(factorlist(:,2));
@@ -49,7 +49,7 @@ else
                     Dvec = movingslope(factorlist_n(:,2),movingbox,1,0.1);
 
                     yy1 = smooth(factorlist_n(:,1),Dvec,0.3,'lowess');
-                    %Depands on the curve shape
+                    %Depends on the curve shape
                     if IndM>Indm
                         slopethreshold=max(yy1);
                     else

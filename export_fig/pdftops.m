@@ -17,7 +17,7 @@ function varargout = pdftops(cmd)
 %   cmd - Command string to be passed into pdftops (e.g. '-help').
 %
 % OUT:
-%   status - 0 iff command ran without problem.
+%   status - 0 if command ran without problem.
 %   result - Output from pdftops.
 
 % Copyright: Oliver Woodford, 2009-2010

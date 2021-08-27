@@ -191,7 +191,7 @@ function print2eps(name, fig, export_options, varargin)
 
     % Determine the font swap table
     if fontswap
-        % Issue #258: Rearrange standard fonts list based on decending "problematicness"
+        % Issue #258: Rearrange standard fonts list based on descending "problematicness"
         % The issue is still *NOT* fully solved because I cannot figure out how to force
         % the EPS postscript engine to look for the user's font on disk
         % Also see: https://stat.ethz.ch/pipermail/r-help/2005-January/064374.html

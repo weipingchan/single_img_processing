@@ -24,7 +24,7 @@ reflectanceBlack = 1.1192;
 reflectanceWhite = 99.1508;
 
 legacy=str2num(legacy_input);
-pauseornot=0; % 0 represents off, 1 represents on; if pause is on, CPUs have time to cool down, preventing overheated
+pauseornot=0; % 0 represents off, 1 represents on; if pause is on, CPUs have time to cool down, preventing overheating
 manual=str2num(manual_input);
 
 addpath(genpath(Code_directory)) %Add the library to the path
@@ -81,13 +81,13 @@ if prod(imgcheck)>0
     %Move images that were analyzed to a sub directory
     cd(Img_directory); %Move to the directory where the original images are stored.
     
-    %Move those images having been analyzed to a subdirectory
+    %Move those images that were analyzed to a subdirectory
     finishedDir='done';
     if ~exist(finishedDir, 'dir')
         mkdir(finishedDir);
     end
     movefile([template,'*.tiff'], finishedDir);
-    disp('Images analyzed have been moved to done directory.');
+    disp('Analyzed images have been moved to done directory.');
 else
     disp(['Drawer: [',template,'] has insufficient spectral images, so will not be processed.']);
 end

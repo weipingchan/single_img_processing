@@ -17,7 +17,7 @@ function varargout = ghostscript(cmd)
 %   cmd - Command string to be passed into ghostscript.
 %
 % OUT:
-%   status - 0 iff command ran without problem.
+%   status - 0 if command ran without problem.
 %   result - Output from ghostscript.
 
 % Copyright: Oliver Woodford, 2009-2015, Yair Altman 2015-

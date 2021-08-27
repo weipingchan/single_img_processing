@@ -131,7 +131,7 @@ function [pt,dudt,fofthandle] = interparc(t,px,py,varargin)
 % %        1.0001
 % %             1
 %
-% % Unwrap the polar angles, and difference them.
+% % Unwrap the polar angles, and find differences.
 % diff(unwrap(TH))
 % % ans =
 % %        1.2541

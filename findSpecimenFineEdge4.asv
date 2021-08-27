@@ -1,5 +1,5 @@
 function [realignedcropedsymimgs,sppmask,sppedge,finalCentroidList]=findSpecimenFineEdge4(realignedcropedimgs,darkThreshold)
-%automatically detect the silhouette of butterfly specimen with wings spread
+%automatically detect the silhouette of butterfly specimen with wings spreaded
 disp('Start to find fine edges and convert the results into storage format.');
 disp(['Use dark threshold: ',num2str(darkThreshold)]);
 [sppamounts,~]=size(realignedcropedimgs);
@@ -10,7 +10,7 @@ finalCentroidList=zeros(sppamounts,2);
 for in=1:sppamounts
     sppimgs=realignedcropedimgs(in,:);
 
-    %Find the symmetric centroid and axis for each bands and average them
+    %Find the symetric centroid and axis for each bands and averaged them
     for im=1:length(sppimgs)
         symimg=sppimgs{im};
         if size(symimg, 3)==1
@@ -38,9 +38,9 @@ for in=1:sppamounts
         realignedcropedsymimgs{in,im}=symsppimgs{im};
     end
     
-    %Find the ideal silhouette or provide a fake one or prevent any error
+    %Find the ideal silhuette or provide a fake one or prevent any error
     try
-         [specimenB,specimenL, panel_ff]= findSpecimenEdge_new4(symsppimgs); %The variable panel_ff can be used for debugging purposes
+         [specimenB,specimenL, panel_ff]= findSpecimenEdge_new4(symsppimgs); %The variable panel_ff can be used for debugging purpose
         if length(specimenB)~=1
                 mask_fake = zeros(size(symsppimgs{2}));
                 mask_fake(ceil(size(mask_fake,1)/10):end-ceil(size(mask_fake,1)/10),ceil(size(mask_fake,2)/10):end-ceil(size(mask_fake,2)/10)) = 1;
@@ -51,7 +51,7 @@ for in=1:sppamounts
         mask_fake = zeros(size(symsppimgs{2}));
         mask_fake(ceil(size(mask_fake,1)/10):end-ceil(size(mask_fake,1)/10),ceil(size(mask_fake,2)/10):end-ceil(size(mask_fake,2)/10)) = 1;
         [specimenB,specimenL]=bwboundaries(mask_fake,'noholes');
-        disp('Something went wrong in edge detection, so provide a temporary outline.');
+        disp('Something went wrong in edge detectation, so provide a temporary outline.');
     end
     sppmask{in}=specimenL;
     sppedge{in}=specimenB;

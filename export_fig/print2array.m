@@ -140,7 +140,7 @@ function [A, bcol] = print2array(fig, res, renderer, gs_options)
             % Delete the temporary bitmap file
             delete(tmp_nam);
         end
-        % Set border pixels to the correct colour
+        % Set border pixels to the correct color
         if isequal(bcol, 'none')
             bcol = [];
         elseif isequal(bcol, [1 1 1])

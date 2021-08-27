@@ -1,11 +1,11 @@
 function [px1, px0, cen1, rad1, cen0, rad0, cmscale,GscaleUR,GscaleLL,scaleBox] = findRefScale(img, shapethreshold, evidence,blackP,whiteP)
-%Find the white, balck standard references and the scale according to the
+%Find the white, black standard references and the scale according to the
 %input image (should be in NIR wavelength band)
 
 %Find white and black reference
 [cen1, rad1,cen0, rad0, refscale0] = findRef(img,shapethreshold);
 
-%Extract the scale bar based on the scence image and the box indicating the
+%Extract the scale bar based on the drawer image and the box indicating the
 %location of the scale bar
 [cmscale,GscaleUR,GscaleLL,scaleBox]=findScale(img,evidence);
 
@@ -23,10 +23,10 @@ px1=refVal(img,cen1,rad1);
 
 %In case no black reference
 if (rad1>0) && (mean(px0)<0 || mean(px0)>300)
-    px0=refNoBlack(img,cen1,rad1);  %Use the black plastic circcle as black reference
-    cen0=zeros(1,2); %reset the BLACK reference to dispearence
+    px0=refNoBlack(img,cen1,rad1);  %Use the black plastic circle as black reference
+    cen0=zeros(1,2); %reset the BLACK reference to disappearence
     rad0=0;
-    disp('The BLACK reference found in the previous step is fake, so it is disgarded.');
+    disp('The BLACK reference found in the previous step is fake, so it is discarded.');
 end
 
 %extract the reflectance on the standard black and white references and get
@@ -70,7 +70,7 @@ end
         end
     end
 
-%This function is using the black plastic circcle as black reference 
+%This function is using the black plastic circle as black reference 
  function revV=refNoBlack(img,cen,rad)
         if rad>0
             [imgrow, imgcol, ~] = size(img);

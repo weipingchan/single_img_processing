@@ -5,6 +5,6 @@ function imgRescale940 = imReScale940(img, blackStd, whiteStd )
     greenres = mat2gray(img(:,:,2), [blackStd(2), whiteStd(2)]);
     blueres = mat2gray(img(:,:,3), [blackStd(3), whiteStd(3)]);
 
-    % Add separate color channels into an gray image.
+    % Add separate color channels into a gray image.
     imgRescale940 = mat2gray(imadd(imadd(redres,greenres),blueres));
 end

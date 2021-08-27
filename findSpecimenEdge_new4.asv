@@ -279,8 +279,8 @@ try
      lrCorner=[boundingBox(1)+boundingBox(3),boundingBox(2)+boundingBox(4)];
      allFrameCorners=[ ulCorner; urCorner; llCorner; lrCorner];
     %%
-    %Prepare the symmetric axes for plotting
-    %create symmetric axes based on eigenvector
+    %Prepare the symetric axes for ploting
+    %create symetric axes based on eigenvector
     symOrtho=reshape(null(symAxis(:).'),1,[]);
     dim_1=realCen+symAxis*size(maskf,1)/3;
     dim_1plot=[realCen(1),dim_1(1);realCen(2),dim_1(2)];
@@ -298,8 +298,8 @@ try
          ulCornerDV=boundingBox(1:2);
          lrCornerDV=[boundingBox(1)+boundingBox(3),boundingBox(2)+boundingBox(4)];
      end
-    disp('########## Begin to find the corner between fore and hind wings. #########');
-    disp('Begin to find the corner between left fore and hing wings.');
+    disp('########## Begin to find the corner between Fore and Hing wings. #########');
+    disp('Begin to find the corner between Left fore and hing wings.');
     nStrongCornersList=[500,1000,2000,3000,4000];
     nSectionList=[60:-5:20]; %number of elements in the list should be greater than 4. Alternative one: [20:5:50]
 
@@ -310,8 +310,8 @@ try
         [conjPt,forehindCorner,~]=findForeHindCorner(nStrongCornersList,nSectionList,maskf,realCen,symAxis,ulCornerDV,boundingBoxDV,slopeSwitch);
     end
     forehindCornerL=conjPt;
-    disp('The corner between left fore and hind wings has been found.');
-    disp('Begin to find the corner between right fore and hind wings.');
+    disp('The corner between Left fore and hing wings has been found.');
+    disp('Begin to find the corner between Right fore and hing wings.');
 
     slopeSwitch='wingEdge';
     [conjPt,forehindCorner,~]=findForeHindCorner(nStrongCornersList,nSectionList,maskf,realCen,symAxis,lrCornerDV,boundingBoxDV,slopeSwitch);
@@ -320,8 +320,8 @@ try
         [conjPt,forehindCorner,~]=findForeHindCorner(nStrongCornersList,nSectionList,maskf,realCen,symAxis,lrCornerDV,boundingBoxDV,slopeSwitch);
     end
     forehindCornerR=conjPt;
-    disp('The corner between right fore and hind wings has been found.');
-    disp('########## Two corners between fore and hind wings are found. #########');
+    disp('The corner between Right fore and hing wings has been found.');
+    disp('########## Two corners between Fore and Hing wings are found. #########');
 % This chunk is preserved for debugging
 %     figure,imshow(maskf);
 %     hold on;

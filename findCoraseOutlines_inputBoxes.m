@@ -1,6 +1,6 @@
 function [geometry_osize,specimenLabelList]=findCoraseOutlines_inputBoxes(ref,template,drawerlist,labelfile,drawerInspectionDir,Code_directory)
-%Idnetify the postion of specimens, claculate the numbers of them, and
-%comapre that number with number of barcodes
+%Identify the position of specimens, calculate the numbers of them, and
+%compare that number with number of barcodes
 %This version directly use the existing bounding boxes
 
     %Find the corresponding labels and match with the number of specimens in the image
@@ -20,7 +20,7 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines_inputBoxes(ref,te
         disp('CANNOT find corresponding drawer information.');
         specimenLabelList=createTemporaryLabel(subtemplate1,sppamounts);
     else
-        disp('Find the corresponding drawer information.');
+        disp('Found the corresponding drawer information.');
         specimenLabelList0=table2cell(labelfile(drawerID,:));
         specimenLabelList0(cellfun(@(specimenLabelList0) any(isnan(specimenLabelList0)),specimenLabelList0)) = []; %Remove NaN from the cell array
         specimenLabelList0=specimenLabelList0(~cellfun('isempty',specimenLabelList0));%remove empty cells
@@ -28,7 +28,7 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines_inputBoxes(ref,te
         labelsppno=length(specimenLabelList);
         %If the number of labels in the list cannot match the image number, use temporary label instead.
         if labelsppno ~= sppamounts
-            disp(['Numbers of labels ' ,num2str(labelsppno),' still DOESNT MATCH ',num2str(sppamounts),' (number of specimens found).']);
+            disp(['Numbers of labels ' ,num2str(labelsppno),' still DOES NOT MATCH ',num2str(sppamounts),' (number of specimens found).']);
             specimenLabelList=createTemporaryLabel(subtemplate1,sppamounts);
         end
     end

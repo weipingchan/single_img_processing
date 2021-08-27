@@ -1,5 +1,5 @@
 function panel_r= regionSegHeadFine(panel,panel_seg2,panel_ed5,Cmask_head_fine)
-%Focus on the head region in order to deal with the antenna issue
+%Focus on the head region in order to deal with the antennae issue
 %Find the optimal value of multiplyFactor
     factorlist=[];
     for multiplyFactor=2:0.1:10 
@@ -17,7 +17,7 @@ function panel_r= regionSegHeadFine(panel,panel_seg2,panel_ed5,Cmask_head_fine)
               factorlist=[factorlist; [multiplyFactor,perimeter,stats_sL.Area]];
         end
     end
-%Assign a fake value for the following if judgement    
+%Assign a fake value for the following if judgment    
 if isempty(factorlist)
     factorlist=[0,0,0];
 end
@@ -47,7 +47,7 @@ else
         Dvec = movingslope(factorlist_n(:,2),movingbox,1,0.1);
 
         yy1 = smooth(factorlist_n(:,1),Dvec,0.3,'lowess');
-        %Depands on the curve shape
+        %Depends on the curve shape
         if IndM>Indm
             slopethreshold=max(yy1);
         else

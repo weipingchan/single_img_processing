@@ -101,7 +101,7 @@ siz=size(ref);
 % Crop individual objects and store each of them in a cell
 geometry_osize=cell(geolen,1);
 for i=1:geolen
-      % Get the bounding box of the i-th object and offest by 2 pixels in all
+      % Get the bounding box of the i-th object and offset by 2 pixels in all
       % directions
       bb_i=ceil(obj_box(i,:));
       idx_x=[bb_i(1)-20 bb_i(1)+bb_i(3)+20];

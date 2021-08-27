@@ -56,7 +56,7 @@ for sppin=1:sppamounts
     save(sppoutname,'sppimgs', '-v7.3');
     disp(['Data matrices for specimen No. ',num2str(sppin),' out of ',num2str(sppamounts),' are saved.']);
     
-    %Create an integrative image for all band including mask
+    %Create an integrative image for all bands including mask
     
     [spimgl,spimgw]=size(sppimgs1{1});
     sppimgsoverview0=[sppimgs1{1:4}];
@@ -65,7 +65,7 @@ for sppin=1:sppamounts
     %create scale bar
     scaleline=zeros(50,size(sppimgsoverview0RGB,2),3);
     scaleline(20:30,round(end-100-cmscale):round(end-100),:)=1;
-    %combine all image together
+    %combine all images together
     sppimgsoverviewRGB=vertcat(sppimgsoverview0RGB,imresize(sppimgsoverview1RGB,[NaN, size(sppimgsoverview0RGB,2)]),scaleline);
        
     sppvisoutname=fullfile('Drawer_result',template,[template,'_visualization'],strjoin([specimenLabelList(sppin),side,'AllBandsOutline.jpg'],'_'));
@@ -102,7 +102,7 @@ for sppin=1:sppamounts
             plot(specimenB{1}(:,2), specimenB{1}(:,1), 'r', 'LineWidth', 0.5);
             hold off;
             export_fig(fig, demoout, '-jpg', '-r100');
-            %Save a copy for inspection purpose
+            %Save a copy for inspection purposes
             if imgtp==2
                 inspout=fullfile('Drawer_result',sppInspectionDir,demooutname);
                 export_fig(fig, inspout, '-jpg', '-r100');

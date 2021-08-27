@@ -1,5 +1,5 @@
 function corimg = import_img(file)
-%Import images and rotate it if the position is incorrect.
+%Import images and rotate if the position is incorrect.
     img = imread(file);
     corimg = img;
     [imheight, imwidth, imchannel]=size(img);

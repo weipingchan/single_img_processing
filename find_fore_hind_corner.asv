@@ -61,7 +61,7 @@ startAdj=sign(jud)*beltwidth/2;
 %Derive vectors of all evenly spaced line
 [segPt2UL,~,~] = interparc(nSection,[realCen(1)+startAdj,tanRefPt(1)],[realCen(2),tanRefPt(2)]);
 %%
-%Derive all intersect points of all evenly spaced lines
+%Derive all intersect points of all evenly spaced line
 intersectAll=cell(length(segPt2UL),0);
 for ptn=1:length(segPt2UL)
     tmpSegPts=[segPt2UL(ptn,:)-wingVector ; segPt2UL(ptn,:)+wingVector];
@@ -69,9 +69,9 @@ for ptn=1:length(segPt2UL)
     intersectAll{ptn} = [intersectX,intersectY];
 end
 %%
-%Calculate 2 indices to determine the targeted point
+%Calculate 2 indices for determine the targeted point
 %1. Number of segments
-%2. If there are candidate points in the belt region
+%2. If there is candidate points in the belt region
 intersectSegCount=zeros(length(intersectAll),0);
 intersectDistPtsCount=zeros(length(intersectAll),0);
 intersectDistPts=[-1 -1 -1];
@@ -85,7 +85,7 @@ for ccc=1:length(intersectAll)
     intersectDistPts=cat(1,intersectDistPts,cat(2,cIdx,inPts));            
 end
 
-%If there are candidate points in the belt region
+%If there is candidate points in the belt region
 intersectDistPtsCount2=intersectDistPtsCount; %preserve the original result
 intersectDistPtsCount2(intersectDistPtsCount2>0)=1; %having value in belt -> 1
 intersectDistPtsCount2(1)=0; %first value -> 1 prevent error
@@ -93,14 +93,14 @@ intersectDistPtsCount2(1)=0; %first value -> 1 prevent error
 % Detect the changing point for number of segments
 intersectSegCountDiff=diff(intersectSegCount);
 intersectSegCountDiff2=sign([0,intersectSegCountDiff]);
-IdxLinear=findchangepts(intersectSegCount,'MaxNumChanges',6,'Statistic','linear'); %THE NUMBER OF CHANGING PT here is sensitive to damaged wings. 6 is enough in most cases.
+IdxLinear=findchangepts(intersectSegCount,'MaxNumChanges',6,'Statistic','linear'); %THE NUMBER OF CHANGING PT here is sensitve to damaged wings. 6 is enough in most cases.
 IdxStd=findchangepts(intersectSegCount,'MaxNumChanges',6,'Statistic','std'); 
 intersectSegCountDiff3=ones( [1,length(intersectSegCount)] );
-intersectSegCountDiff3([IdxLinear,IdxStd])=2; %points show the disconnectivity to its neighbor
+intersectSegCountDiff3([IdxLinear,IdxStd])=2; %points shows the disconectivity to its neighbor
 intersectSegCountDiff4=intersectSegCountDiff2.*intersectSegCountDiff3;
 intersectSegCountDiff4(intersectSegCountDiff4<0)=0;
 
-%Use all two indices to determine the target segment line
+%Use all two indicies to determine the target segment line
 intersectLoc=find(intersectDistPtsCount2.*intersectSegCountDiff4>=2, 1 );
 if isempty(intersectLoc)
     intersectLoc=find(intersectDistPtsCount2.*intersectSegCountDiff4>=1, 1);
@@ -157,7 +157,7 @@ while isempty(forehindCorners)
      end
 end
 
-%If the number of closest 2 points is less than 2, find the nearest 2 on
+%If the number of closest 2 points less than 2, find the nearest 2 on
 %another intersect segment
 intersectLoc2=intersectLoc-1;
 while size(closest2Pts,1)<2
@@ -172,7 +172,7 @@ end
 
 
 %%
-%The point most distant from those two detected points should be our target
+%The point most distant form those two detected points should be our target
 if size(forehindCorners,1)>1
     disp(['Find ',num2str(size(forehindCorners,1)),' candidate points; begin refining.']);
     forehindCornerDists=zeros(1,size(forehindCorners,1));
@@ -189,7 +189,7 @@ else
 end
 
 if ~isempty(forehindCorner)
-    disp('Found the key point.');
+    disp('Find the key point.');
 else
     disp('DID NOT find the key point.');
 end

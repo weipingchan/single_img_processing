@@ -138,7 +138,7 @@ N(k,:) = -N(k,:);
 % variables. The first two variables represent
 % the center coordinates of the circle. X(4) = R
 % is the sphere radius. The remainder of the
-% variables are the slack variabls S(i).
+% variables are the slack variables S(i).
 
 % equality constraints defined by the dot products
 % with the normal vectors.

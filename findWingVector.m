@@ -1,8 +1,8 @@
 function [wingVector,tanRefPt] = findWingVector(maskf2,realCen,boundingBox,verVector,part)
-%%This function is used to find the tangent slope at the outter side of a
-%%pair of fore and hindwings.
+%%This function is used to find the tangent slope at the outer side of a
+%%pair of fore- and hindwings.
 % By identifying the minimal bounding triangle multiple times with changing windows sizes, the slope
-% at the outter side of wings should always be the same in most cases, so the most frequent
+% at the outer side of wings should always be the same in most cases, so the most frequent
 % one is our target.
 
 prebeltWparList=[0.15,0.2,0.25,0.3,0.35,0.4,0.5];
@@ -39,11 +39,11 @@ for prebeltn=1:length(prebeltWparList)
     [~,minLoc]=min([d1,d2,d3]);
     vecTri=diff(sideTriy)./diff(sideTrix);
     
-    vecTriList=[vecTriList; [triPtList(minLoc:minLoc+1,:), [vecTri(minLoc:minLoc,:); vecTri(minLoc:minLoc,:)]]]; %Here, prebeltn act as an non-constant value
+    vecTriList=[vecTriList; [triPtList(minLoc:minLoc+1,:), [vecTri(minLoc:minLoc,:); vecTri(minLoc:minLoc,:)]]]; %Here, prebeltn acts as an non-constant value
 end
 verSlope=verVector(1)/verVector(2);
 tmpList=round(vecTriList(:,3),3);
-wingSlope0=mode(tmpList(tmpList~=round(verSlope,3))); %FInd the commonest value except verSlope of verVector
+wingSlope0=mode(tmpList(tmpList~=round(verSlope,3))); %Find the most common value except verSlope of verVector
 pointLoc1=find(round(vecTriList(:,3),3)==wingSlope0, 1, 'first');
 pointList=vecTriList(pointLoc1:pointLoc1+1,1:2);
 tanRefPt=flip(pointList(1,:));

@@ -1,8 +1,8 @@
 function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,drawerlist,labelfile,shapethreshold,maxarea2rectangleratio,gatheringfactorlist,MinimalObjectSize,Code_directory,drawerInspectionDir)
-%Idnetify the postion of specimens, claculate the numbers of them, and
-%comapre that number with number of barcodes    
+%Identify the position of specimens, calculate the numbers of them, and
+%compare that number with number of barcodes    
 
-    %Find the corresponding labels and match with thenumber of specimens
+    %Find the corresponding labels and match with the number of specimens
     %Create temporary one if cannot find one
     subtemplate0=strsplit(template,'_');
     subtemplate1=strjoin(subtemplate0(1:end-1),'_');
@@ -35,11 +35,11 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
             if loo==length(gatheringfactorlist)  
                 [~,minloc]=min(abs(gatheringresult(:,2)-labelsppno)); 
                 if minloc==loo 
-                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]); 
+                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chosen, gatheringfactor: ' ,num2str(gatheringfactor)]); 
                     break; 
                 else  
                     gatheringfactor=gatheringresult(minloc,1);  
-                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chose, gatheringfactor: ' ,num2str(gatheringfactor)]); 
+                    disp(['Since no gatheringfactor can detect the correct number of specimens, the closest one is chosen, gatheringfactor: ' ,num2str(gatheringfactor)]); 
                     [geometry_osize,sppamounts]=find_specimen2(ref,shapethreshold,maxarea2rectangleratio,gatheringfactor,MinimalObjectSize); 
                     disp(['Number of specimens found is: ' ,num2str(sppamounts),' .']);  
                 end 
@@ -48,7 +48,7 @@ function [geometry_osize,specimenLabelList]=findCoraseOutlines(ref,template,draw
         %If the number of labels in the list cannot match the image number, use
         %temporary label instead.
         if labelsppno ~= sppamounts
-            disp(['Numbers of labels ' ,num2str(labelsppno),' still DOESNT MATCH ',num2str(sppamounts),' (number of specimens found).']);
+            disp(['Numbers of labels ' ,num2str(labelsppno),' still DOES NOT MATCH ',num2str(sppamounts),' (number of specimens found).']);
             specimenLabelList=createTemporaryLabel(subtemplate1,sppamounts);
         end
     end

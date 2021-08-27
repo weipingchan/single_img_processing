@@ -18,7 +18,7 @@
 % Copyright (C) Oliver Woodford 2009-2010, Yair Altman 2015-
 
 % Thanks to Aldebaro Klautau for reporting a bug when saving to
-% non-existant directories.
+% non-existent directories.
 
 % 22/09/2018 - Xpdf website changed to xpdfreader.com
 

@@ -1,5 +1,5 @@
 function [cmscale,GscaleUR,GscaleLL] = Cm2Pixel(img,scaleBox)
-%Extract the scale bar based on the scence image and the box indicating the
+%Extract the scale bar based on the drawer image and the box indicating the
 %location of the scale bar
 %the variable cmscale indicates the number of pixels per centimeter
 
@@ -11,7 +11,7 @@ height = abs(yBottom - yTop);
 width = abs(xRight - xLeft);
 imgScale = imcrop(img, [xLeft, yTop, width, height]);
 
-%Use scales as reference to generate unit convertion
+%Use scales as reference to generate unit conversion
 imgScalebw=imbinarize(imadjust(rgb2gray(imgScale)));
 imgScalebwBlur=bwareaopen(imerode(imdilate(imcomplement(bwareaopen(imcomplement(imgScalebw),round(length(imgScale)/20)^2)),strel('disk',15)),strel('disk',10)),round(length(imgScale)/20)^2);
 

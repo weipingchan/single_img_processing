@@ -1,5 +1,5 @@
 function [com, mainAxis,secAxis]=findSymetricAxes(inImg)
-%Find the symetric axes for an image
+%Find the symmetric axes for an image
     if size(inImg,3)>1, inImg=rgb2gray(inImg); end
     imd=transpose(inImg);
     [nx,ny] = size(imd);

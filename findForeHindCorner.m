@@ -1,5 +1,5 @@
 function [conjPt, forehindCorner,beltHpar] =findForeHindCorner(nStrongCornersList,nSectionList,mask,realCen,symAxis,tarCorner,boundingBox,slopeSwitch)
-%To find the gap point of fore-and hindwings
+%To find the gap point of fore- and hindwings
 %Moving parameter searching is applied in order to find the more accurate targets
 beltHparList=[0.2:0.01:0.25];
 beltHpars=[];
@@ -83,7 +83,7 @@ nsecn=1;
     beltHpar=max(beltHpars);
         
     %If still cannot find the segment corner, use the horizontal vector to
-    %asign one unideal point
+    %assign one unideal point
     if isempty(forehindCorner)
         %Calculate necessary vectors
         symOrtho=reshape(null(symAxis(:).'),1,[]);

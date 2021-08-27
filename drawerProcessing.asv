@@ -73,7 +73,7 @@ if manual==0
     [geometry_osize,specimenLabelList]=findCoraseOutlines(Unlinear_img(img0s{2}),template,drawerlist,labelfile,shapethreshold,maxarea2rectangleratio,gatheringfactorlist,MinimalObjectSize,Code_directory,drawerInspectionDir);
     disp(['Variable [MinimalObjectSize]: ',num2str(MinimalObjectSize)]);
 else
-    [wbimg0s,~]=historical_imgs_cropping2(wbimg0s,img0s); %Crop unwanted border outside of the imaging platform if any
+    [wbimg0s,~]=historical_imgs_cropping2(wbimg0s,img0s); %Crop unwanted bourder outside of the imaging platform if any
     disp(['Manually defined specimen boxes are used. Matrix name: [',[template,'_Boxes.mat]']]);
     [geometry_osize,specimenLabelList]=findCoraseOutlines_inputBoxes(wbimg0s{2},template,drawerlist,labelfile,drawerInspectionDir,Code_directory);
 end
@@ -82,7 +82,7 @@ clear img0s
 %cookie-cutting specimen images from the drawer image
 cropedimgs=cropimg(wbimg0s,geometry_osize);
 clear wbimg0s
-disp('Specimen images are cropped based on the bounding boxes.');
+disp('Specimen images are croped based on the bounding boxes.');
 
 %realign multispectral images
 refno=2; %Use Near infrared (940 nm) as the reference image
@@ -97,7 +97,7 @@ clear cropedimgs
 %remove this variable in all connected parental files though it is useless
 %now
 
-%Detect the outline of each specimen
+%Detet the outline of each specimen
 [realignedcropedsymimgs,sppmask,sppedge,finalCentroidList]=findSpecimenFineEdge4(realignedcropedimgs,darkThreshold);
 clear realignedcropedimgs
 

@@ -53,15 +53,15 @@ if n>3
   edges = reshape(J,size(edges));
   
 elseif n==3
-  % its a triangle already
+  % it's a triangle already
   edges = [1 2;2 3;3 1];
 elseif n==2
-  % its a single edge
+  % it's a single edge
   trix = xy([1 2 1 1],1);
   triy = xy([1 2 1 1],2);
   return
 elseif n==1
-  % its a single point
+  % it's a single point
   trix = xy([1 1 1 1],1);
   triy = xy([1 1 1 1],2);
   return
@@ -120,7 +120,7 @@ for i = 1:nedges
     xyt = -xyt;
   end
   
-  % find the point which minimizes the triangle area
+  % find the point that minimizes the triangle area
   minxt = min(xyt(:,1));
   xy3 = [.5*minxt,mean(xyt(:,2))];
   

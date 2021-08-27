@@ -1,5 +1,5 @@
 function bw=adaptivethreshold(IM,ws,C,tm)
-%ADAPTIVETHRESHOLD An adaptive thresholding algorithm that seperates the
+%ADAPTIVETHRESHOLD An adaptive thresholding algorithm that separates the
 %foreground from the background with nonuniform illumination.
 %  bw=adaptivethreshold(IM,ws,C) outputs a binary image bw with the local 
 %   threshold mean-C or median-C to the image IM.

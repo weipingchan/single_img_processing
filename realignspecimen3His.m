@@ -1,6 +1,6 @@
 function realignedcropedimgs=realignspecimen3His(cropedimgs,refno,pauseornot)
 %realign all bands to the reference band. Though this version is designed for brighter background, note that this is easily failed
-%when the background with shadows
+%when the background has shadows
 
 [geolen,imgn]=size(cropedimgs);
 imgDiffDistThreshold=45; %This value is derived from acceptable transformation results
@@ -136,7 +136,7 @@ for in=1:geolen
             else
                 nColors = 3;
                 ab = im2uint16(movingin);
-                pixel_labels =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function available in only V.2018b
+                pixel_labels =imsegkmeans(ab,nColors); %Use image pixel clustering method to find better segments. This function is available in only V.2018b
                 movingAdj=imadjust(pixel_labels);
             end
 
@@ -189,7 +189,7 @@ for in=1:geolen
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 
     if pauseornot==1
-        pause(90) %Prevent CPU overheated. Turn off while running the script on clusters
+        pause(90) %Prevent CPU from overheating. Turn off while running the script on clusters
     end
     disp(['Specimen No. ',num2str(in),' out of ',num2str(geolen),' is aligned.']);
 end

@@ -6,7 +6,7 @@ function [cmscale,GscaleUR,GscaleLL,scaleBox] = findScale(img,evidence)
 scaleBox=findScale1(img,evidence);
 
 if sum(sum(scaleBox))>0
-%Extract the scale bar based on the scence image and the box indicating the
+%Extract the scale bar based on the drawer image and the box indicating the
 %location of the scale bar
     [cmscale,GscaleUR,GscaleLL]=Cm2Pixel(img,scaleBox);
 else

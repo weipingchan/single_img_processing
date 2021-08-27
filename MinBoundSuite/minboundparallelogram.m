@@ -243,7 +243,7 @@ sidevec = [cos(ang),sin(ang)];
 % the positive x direction, by the way it is constructed.
 nvec = [sin(ang);-cos(ang)];
 
-% What is the left most point that a side will hit against?
+% What is the leftmost point that a side will hit against?
 % The rightmost? get that information from a dot product of
 % the points with the normal vector of the sides.
 dp = xyr*nvec;
@@ -254,7 +254,7 @@ rightmost = max(dp);
 % parallelogram is 
 leftpoint = leftmost*nvec.';
 
-% and the right hand side line passes through this point.
+% and the right-hand side line passes through this point.
 rightpoint = rightmost*nvec.';
 
 % we can define each line by the parametric equations
@@ -275,7 +275,7 @@ x2 = rightpoint(1) + s0*sidevec(1);
 sidelength = pgheight./cos(pi/2 - ang);
 baselength = abs(x2 - x1);
 
-% so the perimeter of the parallellogram is given by
+% so the perimeter of the parallelogram is given by
 perim = 2*(abs(sidelength) + baselength);
 
 % don't bother to do these unless necessary

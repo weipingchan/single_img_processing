@@ -6,7 +6,7 @@ px1=refVal(img,cen1,rad1);
 
 %In case no black reference
 if mean(px0)<0
-    px0=refNoBlack(img,cen0,rad0);  %Use the black plastic circcle as black reference 
+    px0=refNoBlack(img,cen0,rad0);  %Use the black plastic circle as black reference 
 end
 
 %Find the corresponding pixel value for the real 0 and 1 reflectance
@@ -43,7 +43,7 @@ end
         end
     end
 
-%This function is using the black plastic circcle as black reference 
+%This function is using the black plastic circle as black reference 
  function revV=refNoBlack(img,cen,rad)
         if rad>0
         [imgrow, imgcol, ~] = size(img);
