@@ -58,10 +58,10 @@ sppEdgePt=specimenB{1};
 %Adjusting the target corner to prevent serious edge effect (i.e. many corners will be detected)
 startAdj=sign(jud)*beltwidth/2;
 %%
-%Derive vectors of all evenly spaced line
+%Derive vectors of all evenly-spaced lines
 [segPt2UL,~,~] = interparc(nSection,[realCen(1)+startAdj,tanRefPt(1)],[realCen(2),tanRefPt(2)]);
 %%
-%Derive all intersect points of all evenly spaced lines
+%Derive all intersect points of all evenly-spaced lines
 intersectAll=cell(length(segPt2UL),0);
 for ptn=1:length(segPt2UL)
     tmpSegPts=[segPt2UL(ptn,:)-wingVector ; segPt2UL(ptn,:)+wingVector];

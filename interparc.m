@@ -64,7 +64,7 @@ function [pt,dudt,fofthandle] = interparc(t,px,py,varargin)
 %               That is, the first point will be replicated
 %               onto the end.
 %
-%               If csape is not present in your matlab release,
+%               If csape is not present in your Matlab release,
 %               then an error will result.
 %
 %        DEFAULT: 'spline'

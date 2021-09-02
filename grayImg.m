@@ -1,5 +1,5 @@
 function gray=grayImg(inimg)
-%convert image to gray scale
+%convert image to grayscale
     [~, ~, chab]=size(inimg);
     if chab>1
         gray=rgb2gray(inimg);

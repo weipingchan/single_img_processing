@@ -3,7 +3,7 @@ function single_img_processing(Img_directory, Code_directory, Result_directory, 
 %legacy 0 represents no, 1 represents yes (legacy indicates those images with brighter background and shadows)
 %manual 0 represents off, 1 represents on (manual indicates if manually defined specimen boxes are used or not)
 
-%Convert double quotes to single quotes for the matlab version prior than 2017
+%Convert double quotes to single quotes for the Matlab version prior than 2017
 if size(Img_directory,2)==1 Img_directory=Img_directory{1};, end;
 if size(Code_directory,2)==1 Code_directory=Code_directory{1};, end;
 if size(Result_directory,2)==1 Result_directory=Result_directory{1};, end;

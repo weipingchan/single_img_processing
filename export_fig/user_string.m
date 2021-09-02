@@ -1,12 +1,12 @@
 function string = user_string(string_name, string)
-%USER_STRING  Get/set a user specific string
+%USER_STRING  Get/set a user-specific string
 %
 % Examples:
 %   string  = user_string(string_name)
 %   isSaved = user_string(string_name, new_string)
 %
-% Function to get and set a string in a system or user specific file. This
-% enables, for example, system specific paths to binaries to be saved.
+% Function to get and set a string in a system or user-specific file. This
+% enables, for example, system-specific paths to binaries to be saved.
 %
 % The specified string will be saved in a file named <string_name>.txt,
 % either in a subfolder named .ignore under this file's folder, or in the
@@ -24,7 +24,7 @@ function string = user_string(string_name, string)
 % Copyright (C) Oliver Woodford 2011-2014, Yair Altman 2015-
 
 % This method of saving paths avoids changing .m files which might be in a
-% version control system. Instead it saves the user dependent paths in
+% version control system. Instead it saves the user-dependent paths in
 % separate files with a .txt extension, which need not be checked in to
 % the version control system. Thank you to Jonas Dorn for suggesting this
 % approach.

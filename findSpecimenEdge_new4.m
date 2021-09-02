@@ -41,7 +41,7 @@ else
     end
 end
 
-specimenMask1 = imerode(imdilate(specimenMask0,strel('disk',2)),strel('disk',2)); %Modified Feb. 15, 2020
+specimenMask1 = imerode(imdilate(specimenMask0,strel('disk',2)),strel('disk',2));
 %%
 adjsizefactor=2;
 %Use the standard deviation of background to filter the foreground image
@@ -79,7 +79,7 @@ panel0=localcontrast(rgb2gray(simplematrix));
 %Create a set of images that were handled by different approaches
 panel_sharp0=imsharpen(localcontrast(panel0),'Radius',1,'Amount',3);
 panel_ed0=immultiply(imfill(imdilate(im2double(panel_sharp0),strel('disk',2)),'hole'),imfill(imdilate(im2double(panel0),strel('disk',3)),'hole'));
-panel=imadjust(immultiply(imfill(panel_ed0),imdilate(imfill(specimenMask1,'hole')+0.2,strel('disk',5))))+imfill(specimenMask1,'hole')*0.3; %Added 20181128
+panel=imadjust(immultiply(imfill(panel_ed0),imdilate(imfill(specimenMask1,'hole')+0.2,strel('disk',5))))+imfill(specimenMask1,'hole')*0.3;
 
 %Use the index to judge if the mask is good or not
 spMaskInd=nnz(imclearborder(specimenMask4))/(prow*pcol);
