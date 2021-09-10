@@ -109,7 +109,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
 %   -r<val> - option val indicates the resolution (in pixels per inch) to
 %             export bitmap and vector outputs at, keeping the dimensions
 %             of the on-screen figure. Default: '-r864' (for vector output
-%             only). Note that the -m option overides the -r option for
+%             only). Note that the -m option overrides the -r option for
 %             bitmap outputs only.
 %   -native - option indicating that the output resolution (when outputting
 %             a bitmap format) should be such that the vertical resolution
@@ -1035,7 +1035,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     fprintf(2, '  or try to set groot''s Units property back to its default value of ''pixels'' (<a href="matlab:web(''https://github.com/altmany/export_fig/issues/149'',''-browser'');">details</a>)\n');
                 end
             catch
-                % ignore - maybe an old MAtlab release
+                % ignore - maybe an old Matlab release
             end
             fprintf(2, '\nIf the problem persists, then please <a href="https://github.com/altmany/export_fig/issues">report a new issue</a>.\n\n');
         end
@@ -1289,7 +1289,7 @@ function [fig, options] = parse_args(nout, fig, varargin)
     % Quick bail-out if no figure found
     if isempty(fig),  return;  end
 
-    % Do border padding with repsect to a cropped image
+    % Do border padding with respect to a cropped image
     if options.bb_padding
         options.crop = true;
     end
