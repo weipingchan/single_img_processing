@@ -4,12 +4,12 @@ addpath(genpath(Code_directory)) %Add the library to the path
 
 MinimalObjectSize=500; %Define the minimal object that is retained as the mask, removing all other trivial spots
 
- idcs   = strfind(spp_mat_directory,filesep); %'filesep' here is a preserved variable in matlab
+ idcs   = strfind(spp_mat_directory,filesep); %'filesep' here is a preserved variable in Matlab
  NsppDir = spp_mat_directory(1:idcs(end)-1);
 
  
 % Turn off this warning "Warning: Image is too big to fit on screen; displaying at 33% "
-% To set the warning state, you must first know the message identifier for the one warning you want to enable. 
+% To set the warning state, you must first know the message identifier for the warning you want to enable. 
 warning('off', 'Images:initSize:adjustingMag');
  
 %Create a directory for inspection if it does not exist
@@ -54,7 +54,7 @@ for matinID=1:length(img_listing)
 
     %Only update the matrix if the original matrix can be found
     try
-        %read original matrice
+        %read original matrix
         try
             matinname=fullfile(spp_mat_directory,[template,'_AllBandsMask.mat']);
             sppmat0=load(matinname);
@@ -71,7 +71,7 @@ for matinID=1:length(img_listing)
         sppimgs{end-1}=bwareaopen(imbinarize(manualimg(:,:,end),0.1),MinimalObjectSize);
 
         matoutname=fullfile(Result_directory,[template,'_AllBandsMask.mat']);
-        save(matoutname,'sppimgs', '-v7.3'); %save the specimen matrix. The argument '-v7.3' allows files larger than 2 GB being saved with compression
+        save(matoutname,'sppimgs', '-v7.3'); %save the specimen matrix. The argument '-v7.3' allows files larger than 2 GB to be saved by compressing them
 
         %Save manual result for inspection
         [specimenB,~]=bwboundaries(sppimgs{end-1},'noholes');
@@ -89,7 +89,7 @@ for matinID=1:length(img_listing)
         close(fig);
         disp(['The matrix of Image [',template,'] has been updated.']);
 
-        %Move and collect those updated matrices
+        %Move and collect updated matrices
         movefile(matinname, fullfile(NsppDir,outdatedDir));
         disp(['outdated specimen matrix [',template,'] have been moved to the outdated directory.']);
         movefile(manuallinname, fullfile(manual_shape_directory,doneDir));

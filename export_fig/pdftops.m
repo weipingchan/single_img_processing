@@ -78,7 +78,7 @@ function path_ = xpdf_path
     %end
 
     % Provide an alternative possible explanation as per issue #137
-    errMsg2 = 'If you have pdftops installed, perhaps Matlab is shaddowing it as described in ';
+    errMsg2 = 'If you have pdftops installed, perhaps Matlab is shadowing it as described in ';
     url2 = 'https://github.com/altmany/export_fig/issues/137';
     fprintf(2, '%s\n', [errMsg2 '<a href="matlab:web(''-browser'',''' url2 ''');">issue #137</a>']);
     errMsg2 = [errMsg2 url1];

@@ -83,7 +83,7 @@ b = 1;
 m = numel(ind);
 n = numel(ind2);
 for a = 1:m
-    % Go forwards width commands until we pass the current line style
+    % Go forwards with commands until we pass the current line style
     while b <= n && ind2(b) < ind(a)
         b = b + 1;
     end
