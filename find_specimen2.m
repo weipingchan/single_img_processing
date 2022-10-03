@@ -30,7 +30,7 @@ fig3=bwareaopen(imerode(imresize(bwareaopen(imdilate(imbinarize(imclearborder(fi
 statsed = regionprops(edL,'Area','Centroid','PixelIdxList','MajorAxisLength','MinorAxisLength','BoundingBox');
 
 geometry=[];
-for k = 1:ed
+for k = 1:edB
     % obtain (X,Y) boundary coordinates corresponding to label 'k'
     boundary = edB{k};
 
